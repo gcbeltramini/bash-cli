@@ -1,0 +1,12 @@
+# Contributing
+
+## Creating a new command
+
+Let's suppose that you want to create the command `mycli new-cmd new-subcmd`.
+
+1. Create a new folder called `new-cmd` in the folder `commands`, if it doesn't exist already.
+2. Create a new file called `new-subcmd.sh` in the folder `commands/new-cmd`
+3. Make sure that the file can be executed: `chmod +x commands/new-cmd/new-subcmd.sh`
+4. Copy the content of another file to use as template.
+   1. The help text should start with `##? ` and follows the [docopt](http://docopt.org/) convention.
+   Note that the `Usage` and `Options` sections define how the command will be used.
