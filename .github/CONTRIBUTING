@@ -4,9 +4,12 @@
 
 Let's suppose that you want to create the command `mycli new-cmd new-subcmd`.
 
-1. Create a new folder called `new-cmd` in the folder `commands`, if it doesn't exist already.
-2. Create a new file called `new-subcmd.sh` in the folder `commands/new-cmd`
+1. Create a new folder called `new-cmd` inside the `commands` directory, if it doesn't already exist.
+2. Create a new file called `new-subcmd.sh` in the folder `commands/new-cmd`.
 3. Make sure that the file can be executed: `chmod +x commands/new-cmd/new-subcmd.sh`
-4. Copy the content of another file to use as template.
-   1. The help text should start with `##? ` and follows the [docopt](http://docopt.org/) convention.
-   Note that the `Usage` and `Options` sections define how the command will be used.
+4. Use the content of another file as template.
+   1. The help text should start with `##?` and follow the [docopt](http://docopt.org/) convention.
+      Note that the `Usage` and `Options` sections define how the command will be used. Everything
+      else is ignored by the parser.
+   2. To check if the input arguments are being correctly parsed, run `MYCLI_DEBUG=1 mycli new-cmd new-subcmd`
+      with the proper inputs. You should see the parsed arguments at the end of the debugging output.
