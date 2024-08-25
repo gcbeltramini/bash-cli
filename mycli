@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Initialize variables
+# --------------------------------------------------------------------------------------------------
+
+CLI_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+CLI_PARENT_DIR=$(dirname "$CLI_DIR")
+export CLI_DIR
+export CLI_PARENT_DIR
+
+# Set debugging
+# --------------------------------------------------------------------------------------------------
+
+if [[ -n ${MYCLI_DEBUG:-} ]]; then
+    set -x
+    # shellcheck disable=SC2001
+    bash_source_short=$(echo "${BASH_SOURCE[0]}" | sed "s:^${CLI_PARENT_DIR}/::")
+    export PS4='+ ${bash_source_short}:${LINENO} ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+fi
+
+# Run command or list commands
+# --------------------------------------------------------------------------------------------------
+
+source "${CLI_DIR}/core/cli_root/cli_init.sh"
+
+if [[ -n ${1:-} && -n ${2:-} ]]; then
+    # The CLI received 2 arguments (e.g., mycli foo bar)
+    run_command "$@"
+elif [[ -n ${1:-} && -z ${2:-} ]]; then
+    # The CLI received 1 argument (e.g., mycli foo)
+    if [[ $1 == "update" ]]; then
+        "${CLI_DIR}/core/cli_root/update.sh"
+    elif [[ $1 == "version" || $1 == "--version" || $1 == "-v" ]]; then
+        "${CLI_DIR}/core/cli_root/version.sh"
+    else
+        list_commands "$1"
+    fi
+else
+    # The CLI received 0 arguments (mycli)
+    show_ascii_art
+    list_commands
+    echo "update"
+    echo "version"
+fi
