@@ -1,5 +1,5 @@
 ---
-name: Issue template
+name: Generic Issue
 about: Generic issue template for bug report, feature request, documentation, question,
   etc.
 title: ''
