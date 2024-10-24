@@ -33,13 +33,12 @@ elif [[ -n ${1:-} && -z ${2:-} ]]; then
         "${CLI_DIR}/core/cli_root/update.sh"
     elif [[ $1 == "version" || $1 == "--version" || $1 == "-v" ]]; then
         "${CLI_DIR}/core/cli_root/version.sh"
+    elif [[ $1 == "help" || $1 == "--help" || $1 == "-h" ]]; then
+        show_cli_help
     else
         list_commands "$1"
     fi
 else
     # The CLI received 0 arguments (mycli)
-    show_ascii_art
-    list_commands
-    echo "update"
-    echo "version"
+    show_cli_help
 fi

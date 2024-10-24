@@ -17,6 +17,17 @@ run_command() {
     shift 2
     local -r cmd_args=("$@")
 
+    if [[ $cmd1 == 'help' ]]; then
+        # mycli help <command>
+        list_commands "$cmd2" >&2
+        exit 0
+    elif [[ $cmd2 == '--help' || $cmd2 == '-h' ]]; then
+        # mycli <command> --help
+        # mycli <command> -h
+        list_commands "$cmd1" >&2
+        exit 0
+    fi
+
     local -r commands_dir="${CLI_DIR}/commands"
     local -r command_path=$(find "$commands_dir" \
         -type f \
@@ -70,35 +81,41 @@ list_commands() {
     if [[ -z $cmd ]]; then
         echo "Available commands"
         echo "------------------"
-        find "$commands_dir" -type f -maxdepth 2 -name "*.sh" |
-            sed "s:${commands_dir}/:: ; s:\.sh$::" |
+        find "$commands_dir" -mindepth 2 -maxdepth 2 -type f -name "*.sh" |
+            rev | cut -d'/' -f1,2 | rev |
+            sed "s:\.sh$::" |
             tr '/' ' ' |
             sort
     else
         echo "Available commands for '$cmd'"
         local -r dashes=$(printf '%*s' "${#cmd}" '' | tr ' ' '-')
         echo "-------------------------${dashes}"
-        find "$commands_dir" -type f -maxdepth 2 -path "${commands_dir}/${cmd}*/*" -name "*.sh" |
-            sed "s:${commands_dir}/${cmd}[^/]*/:: ; s:\.sh$::" |
+        find "$commands_dir" \
+            -mindepth 2 \
+            -maxdepth 2 \
+            -type f \
+            -path "${commands_dir}/${cmd}*/*" \
+            -name "*.sh" \
+            -exec basename {} \; |
+            sed "s:\.sh$::" |
             sort
     fi
 }
 
-show_ascii_art() {
-    # Show ASCII art.
+show_cli_help() {
+    # Show CLI help.
     #
     # Usage:
-    #   show_ascii_art
-
-    # "mycli" written in font Banner3
-    local -r ascii_art="
-##     ## ##    ##  ######  ##       ####
-###   ###  ##  ##  ##    ## ##        ##
-#### ####   ####   ##       ##        ##
-## ### ##    ##    ##       ##        ##
-##     ##    ##    ##       ##        ##
-##     ##    ##    ##    ## ##        ##
-##     ##    ##     ######  ######## ####
-"
-    echo "$ascii_art"
+    #   show_cli_help
+    echo 'Welcome to the CLI (command-line interface)!'
+    echo
+    echo 'Usage'
+    echo '-----'
+    echo '  mycli <command> [<args>]'
+    echo
+    echo "Run 'mycli help <command>' or 'mycli <command> --help' for more information on a command."
+    echo
+    list_commands
+    echo 'update'
+    echo 'version'
 }
