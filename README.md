@@ -19,6 +19,15 @@ continue running when there are errors, the command may stop without error messa
 
 Run: `scripts/mycli_setup.sh`
 
+This script will:
+
+- Install [Homebrew](https://brew.sh/)
+- Install commands with Homebrew
+- Edit the shell profile files to:
+  - Add the CLI to the `PATH` variable
+  - Enable autocomplete for the CLI
+- Make the required scripts executable
+
 ## Using the CLI
 
 ```shell
