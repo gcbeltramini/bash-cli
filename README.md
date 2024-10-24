@@ -61,7 +61,7 @@ If it is different, follow the instructions from [the setup section](#setup).
 
 ### `zsh: command not found: mycli`
 
-Check if the environment variable `PATH` contains the path to the where the file `mycli` is:
+Check if the environment variable `PATH` contains the path to where the file `mycli` is:
 
 ```shell
 echo "$PATH" | tr ':' "\n"
