@@ -45,6 +45,21 @@ Examples:
   `mycli my-command my-subcommand my-positional-param --my-flag --my-named-param="my-value"`
   - Example: `mycli hello world John`
 
+## Help commands
+
+```shell
+mycli help
+mycli --help
+mycli -h
+
+mycli help <cmd1>
+mycli <cmd1> --help
+mycli <cmd1> -h
+
+mycli <cmd1> <cmd2> --help
+mycli <cmd1> <cmd2> -h
+```
+
 ## Debugging
 
 - Use: `MYCLI_DEBUG=1 mycli ...`
