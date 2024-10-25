@@ -41,10 +41,12 @@ _cli_completions() {
 
   # If the user is completing <cmd1> (the first argument)
   if [[ ${COMP_CWORD} -eq 1 ]]; then
+    # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$cmds1" -- "$cur"))
     return 0
   # If the user is completing <cmd2> (the second argument)
   elif [[ ${COMP_CWORD} -eq 2 ]]; then
+    # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$cmds2" -- "$cur"))
     return 0
   fi
