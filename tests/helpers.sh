@@ -78,6 +78,7 @@ get_all_files() {
     find "$path" \
         -type f \
         -not -path '*/.git/*' \
+        -not -path '*/.pytest_cache/*' \
         -not -name '*.pyc' \
         -not -name '.DS_Store'
 }

@@ -19,6 +19,15 @@ continue running when there are errors, the command may stop without error messa
 
 Run: `scripts/mycli_setup.sh`
 
+This script will:
+
+- Install [Homebrew](https://brew.sh/)
+- Install commands with Homebrew
+- Edit the shell profile files to:
+  - Add the CLI to the `PATH` variable
+  - Enable autocomplete for the CLI
+- Make the required scripts executable
+
 ## Using the CLI
 
 ```shell
@@ -36,6 +45,21 @@ Examples:
   `mycli my-command my-subcommand my-positional-param --my-flag --my-named-param="my-value"`
   - Example: `mycli hello world John`
 
+## Help commands
+
+```shell
+mycli help
+mycli --help
+mycli -h
+
+mycli help <cmd1>
+mycli <cmd1> --help
+mycli <cmd1> -h
+
+mycli <cmd1> <cmd2> --help
+mycli <cmd1> <cmd2> -h
+```
+
 ## Debugging
 
 - Use: `MYCLI_DEBUG=1 mycli ...`
@@ -52,7 +76,7 @@ If it is different, follow the instructions from [the setup section](#setup).
 
 ### `zsh: command not found: mycli`
 
-Check if the environment variable `PATH` contains the path to the where the file `mycli` is:
+Check if the environment variable `PATH` contains the path to where the file `mycli` is:
 
 ```shell
 echo "$PATH" | tr ':' "\n"

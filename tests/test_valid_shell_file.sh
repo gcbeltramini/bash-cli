@@ -44,6 +44,8 @@ new_section_level_2 "All shell files should start with '${desired_shebang}'..."
 check_if_error "$invalid_files_shebang"
 
 new_section_level_2 "All shell files should have '${desired_set}' at the top (line 2 or 3)..."
+allow_list_regex=".*/core/cli_root/autocomplete.sh$"
+invalid_files_set=$(remove_from_list "$invalid_files_set" "$allow_list_regex")
 check_if_error "$invalid_files_set"
 
 new_section_level_2 "There can't be '# shellcheck disable=...' in the beginning of the shell files..."
