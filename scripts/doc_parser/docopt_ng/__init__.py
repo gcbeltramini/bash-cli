@@ -844,7 +844,7 @@ def docopt(
     version: Any = None,
     options_first: bool = False,
 # ) -> ParsedOptions:
-) -> str:  # mycli customization
+) -> str:  # cli customization
     """Parse `argv` based on command-line interface described in `docstring`.
 
     `docopt` creates your command-line interface based on its
@@ -919,7 +919,7 @@ def docopt(
     matched, left, collected = pattern.fix().match(parsed_arg_vector)
     if matched and left == []:
         # return ParsedOptions((a.name, a.value) for a in (pattern.flat() + collected))
-        # mycli customization:
+        # cli customization:
         result = ParsedOptions((a.name, a.value) for a in (pattern.flat() + collected))
         return convert_to_bash(result)
     if left:
@@ -929,7 +929,7 @@ def docopt(
         #     collected=collected,
         #     left=left,
         # )
-        # mycli customization:
+        # cli customization:
         raise DocoptExit(
             f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: {left}\n"
             f"       Arguments received: {collected}",
@@ -939,7 +939,7 @@ def docopt(
     raise DocoptExit(collected=collected, left=left)
 
 
-# mycli customization:
+# cli customization:
 def show_log(message: str) -> None:
     import inspect
     frame = inspect.currentframe().f_back
@@ -948,7 +948,7 @@ def show_log(message: str) -> None:
     print(f'{filename}:{line_number} - {message}', file=sys.stderr)
 
 
-# mycli customization:
+# cli customization:
 def convert_to_bash(parsed_options: ParsedOptions) -> str:
     import os
     if os.getenv('MYCLI_DEBUG'):
@@ -987,7 +987,7 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
             '# <<----------------------------->>\n')
 
 
-# mycli customization:
+# cli customization:
 def get_duplicate_vals(li: list[str]) -> list[str]:
     from collections import Counter
     return [element for element, count in Counter(li).items() if count > 1]

@@ -13,4 +13,4 @@ To avoid installing external packages and to enable customizations, the code was
 1. The CLI parses the text that starts with `##?` in the commands.
 2. The parsed Python `dict` is converted into a string compatible with `bash`, so that the variables
    can be exported.
-3. The modifications in the original code are identified by `# mycli customization`.
+3. The modifications in the original code are identified by `# cli customization`.
