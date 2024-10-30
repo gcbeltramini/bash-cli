@@ -15,6 +15,20 @@ The cons are that `bash` is not a very popular or beloved language, the readabil
 specially when using complex programming logic, error handling is weak (e.g., the script may
 continue running when there are errors, the command may stop without error message).
 
+## Design
+
+1. The environment variable `PATH` must be edited to include the directory where `mycli` is.
+2. When running `mycli <cmd1> <cmd2>`, the bash file `mycli` defines the global variable `CLI_DIR`
+   and runs the bash script `commands/<cmd1>/<cmd2>.sh`.
+3. Every bash script in the `commands` folder:
+   1. Follows the pattern `commands/<cmd1>/<cmd2>.sh`.
+   2. Loads all helper functions from `<CLI_DIR>/core/helpers.sh`.
+   3. Defines the usage and options with comments starting with `##?` and following the `docopt`
+   syntax, explained at <http://docopt.org/>.
+   4. Internal functions call a Python script to parse the documentation and return the arguments as
+   a Python `dict`, which is then converted into a Python string compatible with `bash`, so that the
+   variables can be exported to be used by the `bash` script.
+
 ## Setup
 
 Run: `scripts/mycli_setup.sh`
@@ -45,7 +59,16 @@ Examples:
   `mycli my-command my-subcommand my-positional-param --my-flag --my-named-param="my-value"`
   - Example: `mycli hello world John`
 
-## Help commands
+### Autocomplete
+
+```shell
+mycli + TAB
+mycli <cmd1> + TAB
+```
+
+Autocomplete is **not available** for the arguments of `mycli <cmd1> <cmd2>`.
+
+### Help commands
 
 ```shell
 mycli help
@@ -60,13 +83,16 @@ mycli <cmd1> <cmd2> --help
 mycli <cmd1> <cmd2> -h
 ```
 
-## Debugging
+## Debug
 
 - Use: `MYCLI_DEBUG=1 mycli ...`
-- Or call the command directly: `CLI_DIR="path/to/bash-cli" ./commands/...`
+  - This will enable debugging mode in bash, which makes the shell print each command and its
+  arguments to the standard error (`stderr`) as they are executed. This is helpful for tracing the
+  execution of the CLI and understanding its flow.
+- Or call the script directly, skipping the CLI: `CLI_DIR="path/to/bash-cli" ./commands/...`
   - For example: `CLI_DIR="path/to/bash-cli" ./commands/hello/world.sh 'John Doe'`
 
-## Troubleshooting
+## Troubleshoot
 
 ### Check the version of `bash`
 
