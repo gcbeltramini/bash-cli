@@ -974,6 +974,14 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
         else:
             value_bash: str = f'"{value}"'
 
+        if value_bash.startswith('"='):
+            # For example: hello world -f="value"
+            # `len(var_name_bash) == 1` cannot be used as additional condition, because `-f` could be an alias for
+            # something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
+            # The fix would be: `value_bash = f'"{value_bash[2::]}'`
+            show_log(f'WARNING: Found an argument with an equal sign for {key}: "{value}"\nYou may need to remove the '
+                     'equal sign from when calling the command.')
+
         bash_vars_definition.append(f'export {var_name_bash:s}={value_bash:s}')
 
     var_names_duplicates: list[str] = get_duplicate_vals(var_names_list)

@@ -10,6 +10,15 @@ run_command() {
     #   run_command <cmd1> <cmd2> [<cmd_args>...]
     #
     # Examples:
+    #
+    #   # Help:
+    #   run_command help hello
+    #   run_command hello --help
+    #   run_command hello -h
+    #   run_command help hello world
+    #   run_command hello world --help
+    #   run_command hello world -h
+    #
     #   run_command hello world
     #   run_command hel wor # if prefixes are unique, it is the same as: run_command hello world
     local -r cmd1=$1
@@ -18,9 +27,15 @@ run_command() {
     local -r cmd_args=("$@")
 
     if [[ $cmd1 == 'help' ]]; then
-        # mycli help <command>
-        list_commands "$cmd2" >&2
-        exit 0
+        if [[ ${#cmd_args[@]} -eq 0 ]]; then
+            # mycli help <command>
+            list_commands "$cmd2" >&2
+            exit 0
+        else
+            # mycli help <command> <subcommand>
+            run_command "$cmd2" "${cmd_args[@]}" --help
+            exit 0
+        fi
     elif [[ $cmd2 == '--help' || $cmd2 == '-h' ]]; then
         # mycli <command> --help
         # mycli <command> -h

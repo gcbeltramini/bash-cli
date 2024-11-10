@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o pipefail
 
-_cli_completions() {
+_mycli_completions() {
   # Autocomplete function for the CLI.
   #
   # This function is called by the autocomplete system when the user presses the TAB key.
@@ -17,12 +17,15 @@ _cli_completions() {
 
   # Define possible completions for <cmd1>
   local -r cmds1=$(
-    find "$commands_dir" \
-      -maxdepth 1 \
-      -mindepth 1 \
-      -type d \
-      -exec basename {} \; |
-      sort
+    {
+      find "$commands_dir" \
+        -maxdepth 1 \
+        -mindepth 1 \
+        -type d \
+        -exec basename {} \;
+      echo "update"
+      echo "version"
+    } | sort
   )
 
   # Define possible completions for <cmd2>
@@ -53,4 +56,4 @@ _cli_completions() {
 }
 
 # Register the autocomplete function
-complete -F _cli_completions mycli
+complete -F _mycli_completions mycli

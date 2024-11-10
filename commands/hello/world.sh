@@ -7,9 +7,9 @@ set -euo pipefail
 ##?   hello world [<name> --foo=NAMED_PARAM --some-flag -- <ls-args>...]
 ##?
 ##? Options:
-##?   --foo=NAMED_PARAM  Some named parameter [default: 42]
-##?   --some-flag        Some flag
-##?   <ls-args>          Arguments to pass to 'ls'
+##?   -f, --foo=NAMED_PARAM  Some named parameter [default: 42]
+##?   --some-flag            Some flag
+##?   <ls-args>              Arguments to pass to 'ls'
 ##?
 ##? Examples:
 ##?   hello world
