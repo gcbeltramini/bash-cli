@@ -4,6 +4,25 @@ Command-line interface (CLI) written in `bash`. This repository contains the min
 CLI. You can create your own CLI by copying the content, and replacing `mycli` and `bash-cli` with
 your command name.
 
+## Table of Contents
+
+- [bash-cli](#bash-cli)
+  - [Table of Contents](#table-of-contents)
+  - [Why bash?](#why-bash)
+  - [Design](#design)
+  - [Installation and update](#installation-and-update)
+    - [Setup](#setup)
+    - [Update](#update)
+  - [Using the CLI](#using-the-cli)
+    - [Autocomplete](#autocomplete)
+    - [Help commands](#help-commands)
+  - [Debug](#debug)
+  - [Contribute](#contribute)
+    - [Run tests locally](#run-tests-locally)
+  - [Troubleshoot](#troubleshoot)
+    - [Check the version of `bash`](#check-the-version-of-bash)
+    - [`zsh: command not found: mycli`](#zsh-command-not-found-mycli)
+
 ## Why bash?
 
 `bash` was chosen because it requires almost no setup, has a good ecosystem of commands, is good for
@@ -29,11 +48,14 @@ continue running when there are errors, the command may stop without error messa
    a Python `dict`, which is then converted into a Python string compatible with `bash`, so that the
    variables can be exported to be used by the `bash` script.
 
-## Setup
+## Installation and update
 
-Run: `scripts/mycli_setup.sh`
+### Setup
 
-This script will:
+1. Clone this repository.
+2. In the terminal, enter the `bash-cli` folder and run: `make install`
+
+This command will:
 
 - Install [Homebrew](https://brew.sh/)
 - Install commands with Homebrew
@@ -41,6 +63,14 @@ This script will:
   - Add the CLI to the `PATH` variable
   - Enable autocomplete for the CLI
 - Make the required scripts executable
+
+### Update
+
+To update `mycli`, you simply need to update the folder `bash-cli`. There are basically 3 ways:
+
+1. In the terminal, run: `mycli update`
+2. In the terminal, enter the `bash-cli` cloned folder and run: `make update`
+3. In the terminal, enter the `bash-cli` cloned folder and run: `git pull origin main`
 
 ## Using the CLI
 
@@ -66,7 +96,7 @@ mycli + TAB
 mycli <cmd1> + TAB
 ```
 
-Autocomplete is **not available** for the arguments of `mycli <cmd1> <cmd2>`.
+Autocomplete is **not available** for the arguments of `mycli <cmd1> <cmd2> + TAB`.
 
 ### Help commands
 
@@ -79,6 +109,7 @@ mycli help <cmd1>
 mycli <cmd1> --help
 mycli <cmd1> -h
 
+mycli help <cmd1> <cmd2>
 mycli <cmd1> <cmd2> --help
 mycli <cmd1> <cmd2> -h
 ```
@@ -91,6 +122,34 @@ mycli <cmd1> <cmd2> -h
   execution of the CLI and understanding its flow.
 - Or call the script directly, skipping the CLI: `CLI_DIR="path/to/bash-cli" ./commands/...`
   - For example: `CLI_DIR="path/to/bash-cli" ./commands/hello/world.sh 'John Doe'`
+
+## Contribute
+
+To contribute to `mycli`, make the desired modifications and run the tests (see the next session).
+When you make local changes, the modifications are applied locally without any additional step.
+
+If someone else wants to use the same modifications, they need to checkout to the new repository. No
+further action is required. For example, if you make changes in the remote branch `new-feature`, another
+person only needs to run `git fetch origin && git checkout new-feature`.
+
+For more details on code organization and content, check these files:
+
+- [README.md](README.md)
+- [commands/README.md](commands/README.md)
+- [core/README.md](core/README.md)
+- [core/cli_root/README.md](core/cli_root/README.md)
+- [core/helpers/README.md](core/helpers/README.md)
+- [scripts/doc_parser/README.md](scripts/doc_parser/README.md)
+- [scripts/doc_parser/docopt_ng/README.md](scripts/doc_parser/docopt_ng/README.md)
+
+### Run tests locally
+
+1. Run all tests: `make test`
+2. Run specific tests:
+   1. To run [ShellCheck](https://github.com/koalaman/shellcheck) (a static analysis tool for shell
+   scripts): `shellcheck --shell=bash /path/to/shell/file.sh`
+   2. To run unit tests with [shUnit2](https://github.com/kward/shunit2) (a unit test framework for
+   bash scripts), run a test file from the [tests](tests) folder. For example: `tests/core/test_helpers/test_echo.sh`
 
 ## Troubleshoot
 
