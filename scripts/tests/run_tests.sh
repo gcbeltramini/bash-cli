@@ -40,9 +40,9 @@ new_section "All helper files should be valid and have tests"
 echo_done
 
 new_section "All commands should have valid names"
-new_section_level_2 "Folder 'update' or 'version' should not exist in the 'commands' folder, because they perform specific actions"
+new_section_level_2 "No folder 'update' or 'version' in the 'commands' folder, and no command with spaces"
 invalid_cmds=$(check_forbidden_cmd_name "$CLI_DIR")
-check_if_error "$invalid_cmds" "Invalid folders:"
+check_if_error "$invalid_cmds" "Invalid folders and files:"
 echo_done
 
 new_section "All files should have exactly one empty line at the end"

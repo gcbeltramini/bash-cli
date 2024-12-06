@@ -975,12 +975,14 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
             value_bash: str = f'"{value}"'
 
         if value_bash.startswith('"='):
-            # For example: hello world -f="value"
-            # `len(var_name_bash) == 1` cannot be used as additional condition, because `-f` could be an alias for
-            # something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
-            # The fix would be: `value_bash = f'"{value_bash[2::]}'`
-            show_log(f'WARNING: Found an argument with an equal sign for {key}: "{value}"\nYou may need to remove the '
-                     'equal sign from when calling the command.')
+            if len(var_name_bash) == 1:
+                # For example: `hello world -f="value"`, instead of `hello world -f "value"`
+                value_bash: str = f'"{value_bash[2::]}'
+            else:
+                # `-f` could be an alias for something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
+                # Since we don't know the original option name, we can't remove the equal sign.
+                show_log(f'WARNING: The value for {key} starts with an equal sign: "{value}"\n'
+                         'You may need to remove the equal sign when calling the command.')
 
         bash_vars_definition.append(f'export {var_name_bash:s}={value_bash:s}')
 

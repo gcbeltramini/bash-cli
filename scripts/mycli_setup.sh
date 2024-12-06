@@ -87,7 +87,7 @@ for shell_file in "${shell_files[@]}"; do
     to_add="
 
 $start_pattern
-MYCLI_HOME=\"${cli_dir}\""'
+export MYCLI_HOME=\"${cli_dir}\""'
 [ -f "$MYCLI_HOME/core/cli_root/autocomplete.sh" ] && source "$MYCLI_HOME/core/cli_root/autocomplete.sh"
 export PATH="${MYCLI_HOME}:${PATH}"
 '"$end_pattern"
