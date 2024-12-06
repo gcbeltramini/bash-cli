@@ -225,12 +225,14 @@ check_executable() {
 }
 
 check_forbidden_cmd_name() {
-    # Check if there are commands with forbidden names.
+    # Check if there are commands with forbidden names:
+    # - "update" and "version" can't be folder names
+    # - files can't have spaces in their names
     #
     # Usage:
     #   check_forbidden_cmd_name [<path>]
     local -r path=${1:-$CLI_DIR}
-    find "$path/commands" -type d \( -name 'update' -o -name 'version' \)
+    find "$path/commands" -type d \( -name 'update' -o -name 'version' \) -o -type f -name '* *.sh'
 }
 
 has_exactly_one_line_at_the_end() {
