@@ -55,7 +55,7 @@ run_command() {
     local -r color_blue='\x1b[34m'
 
     if [[ -z $command_path ]]; then
-        # The commmand was not found.
+        # The command was not found.
         local -r asterisk="${color_blue}*${no_color}"
         echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to find the command '${cmd1} ${cmd2}'."
         echo >&2 -e "       Make sure that the following path exists: '${commands_dir}/${cmd1}${asterisk}/${cmd2}${asterisk}.sh'"
