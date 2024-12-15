@@ -94,9 +94,8 @@ Examples:
 ```shell
 mycli + TAB
 mycli <cmd1> + TAB
+mycli <cmd1> + <cmd2> + TAB
 ```
-
-Autocomplete is **not available** for the arguments of `mycli <cmd1> <cmd2> + TAB`.
 
 ### Help commands
 
