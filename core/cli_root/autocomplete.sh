@@ -45,6 +45,70 @@ _list_subcommands() {
     sort
 }
 
+_extract_docopt_section() {
+  # Extract a section from the help message of a command.
+  #
+  # Usage:
+  #   _extract_docopt_section <help> <section>
+  #
+  # Examples:
+  #   _extract_docopt_section "$help" "usage" # --> "Usage: ..."
+  local -r help="$1"
+  local -r section="$2"
+  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '$d'
+}
+
+_find_usage_line() {
+  # Find the usage line in the help message of a command.
+  #
+  # Usage:
+  #   _find_usage_line <help> <cmd1> <cmd2>
+  #
+  # Examples:
+  #   _find_usage_line "$help" "hello" "world" # --> "hello world ..."
+  local -r help="$1"
+  local -r cmd1="$2"
+  local -r cmd2="$3"
+
+  local -r docopt_usage=$(_extract_docopt_section "$help" "usage")
+  echo "$docopt_usage" | grep "^ *$cmd1  *$cmd2 " || :
+}
+
+_extract_parameters() {
+  # Extract the parameters from the usage of a command.
+  #
+  # Usage:
+  #   _extract_parameters <usage>
+  #
+  # Examples:
+  #   _extract_parameters "$usage" # --> "--foo --help --some-flag"
+  local -r usage="$1"
+
+  # Extract the parameters:
+  # - get the parameters that start with a dash, delimited by space, equal sign and comma: "--foo --foo=42" or
+  #   "-f, --foo" (only appears in the options)
+  # - exclude the 'parameter' "--" and parameters such as "<ls-args>"
+  echo "$usage" |
+    grep -o -- '-[^ =,]*' |
+    grep -vE '^--$|>' || :
+}
+
+_extract_additional_commands() {
+  # Extract additional commands from the usage of a command.
+  #
+  # Usage:
+  #   _extract_additional_commands <usage_line>
+  #
+  # Examples:
+  #   _extract_additional_commands "$usage_line" # --> "foo ..."
+  local -r usage_line="$1"
+
+  echo "$usage_line" |
+    sed 's/[\[<-].*//' | # remove everything after '[', '<' or '-'
+    grep -o -- '[^ ]*' | # extract words
+    tail -n +3 || : # remove the first two words
+}
+
 _extract_arguments() {
   # Extract the arguments from the help message of a command. The help content must follow the
   # docopt format.
@@ -61,28 +125,23 @@ _extract_arguments() {
   local -r help=$(mycli "$cmd1" "$cmd2" --help)
 
   # Extract usage from the help message
-  local -r docopt_usage=$(echo "$help" | sed -n '/^usage:/I,/^$/p' | sed '$d')
-  local -r usage_line=$(echo "$docopt_usage" | grep "^ *$cmd1  *$cmd2 " || :)
+  local -r usage_line=$(_find_usage_line "$help" "$cmd1" "$cmd2")
 
-  params=""
-
-  # Extract parameters from the "Options" section when "[options]" is declared in the usage line
+  # Extract the "Options" section when "[options]" is declared in the usage line
   if grep -q '\[options\]' <<<"$usage_line"; then
-    local -r docopt_options=$(echo "$help" | sed -n '/^options:/I,/^$/p' | sed '$d')
+    local -r docopt_options=$(_extract_docopt_section "$help" "options")
   else
     local -r docopt_options=""
   fi
 
-  # Extract parameters from the usage line
-  # - get the parameters that start with a dash, delimited by space, equal sign and comma: "--foo --foo=42" or
-  #   "-f, --foo" (only appears in the options)
-  # - exclude the 'parameter' "--" and parameters such as "<ls-args>"
-  params+=$(echo "$usage_line $docopt_options" |
-    grep -o -- '-[^ =,]*' |
-    grep -vE '^--$|>' || :)
+  # Extract parameters from the usage line and possibly the "Options" section
+  params=$(_extract_parameters "$usage_line $docopt_options")
+
+  # Extract additional commands from the usage line
+  additional_commands=$(_extract_additional_commands "$usage_line")
 
   # Add "--help" because it's always available and is normally not declared in the usage line
-  echo -e "$params\n--help" | sort -u
+  echo -e "$params\n$additional_commands\n--help" | sort -u
 }
 
 _mycli_completions() {
@@ -115,7 +174,7 @@ _mycli_completions() {
     COMPREPLY=($(compgen -W "$cmds2" -- "$cur"))
     return 0
 
-  # Case 3: The user is completing the parameters
+  # Case 3: The user is completing the parameters or other commands
   else
     local args
     args="$(_extract_arguments "${COMP_WORDS[1]}" "${COMP_WORDS[2]}")"
