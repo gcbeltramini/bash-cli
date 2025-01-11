@@ -58,7 +58,8 @@ invalid_files_shellcheck=$(remove_from_list "$invalid_files_shellcheck" "$allow_
 check_if_error "$invalid_files_shellcheck"
 
 new_section_level_2 "Shell files should be executable..."
-allow_list_regex=".*/tests/helpers.sh$"
-invalid_files_executable=$(check_executable "$CLI_DIR")
+allow_list_regex=".*/tests/helpers.sh$
+.*/tests/resources/commands/problematic file.sh$"
+invalid_files_executable=$(find_not_executable "$CLI_DIR")
 invalid_files_executable=$(remove_from_list "$invalid_files_executable" "$allow_list_regex")
 check_if_error "$invalid_files_executable"
