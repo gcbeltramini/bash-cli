@@ -69,7 +69,7 @@ run_command() {
     else
         # More than one command was found.
         local -r command_path_exact=$(echo "$command_path" | grep "${cmd2}.sh$")
-        if [[ -n $command_path_exact ]]; then # 'cmd2' is a subtring of another command, but it's an exact match of an existing command
+        if [[ -n $command_path_exact ]]; then # 'cmd2' is a substring of another command, but it's an exact match of an existing command
             # Example: 'git check' and 'git checkout' (cm1='git', cmd='check')
             "$command_path_exact" "${cmd_args[@]}"
         else

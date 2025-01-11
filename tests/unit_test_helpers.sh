@@ -118,7 +118,7 @@ get_all_test_helper_files() {
 # --------------------------------------------------------------------------------------------------
 
 check_if_error() {
-    # Check if there are files with error. If there are, diplay error message and exit with error;
+    # Check if there are files with error. If there are, display error message and exit with error;
     # otherwise, display success message.
     #
     # Usage:
