@@ -141,7 +141,7 @@ EOF
 }
 
 oneTimeSetUp() {
-  . core/cli_root/autocomplete.sh
+  . core/cli_root/autocomplete.bash
 
   HELP=$(
     cat <<-EOF
