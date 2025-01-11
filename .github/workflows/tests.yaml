@@ -17,16 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     - name: Run tests
       run: |
         #!/usr/bin/env bash
         set -euo pipefail
 
         modified_files=$(git diff --diff-filter=d --name-only HEAD^ HEAD)
-        echo "$(echo $modified_files | wc -l | xargs) modified files (showing at most 20):"
-        echo "$modified_files" | head -n 20
+        echo "$(echo $modified_files | wc -l | xargs) modified file(s) (excluding deleted files; showing at most 20):"
+        echo "$modified_files" | sort | head -n 20
         echo "--------------------------------------------------------------------------------"
 
         # TODO: Run tests only for modified files
