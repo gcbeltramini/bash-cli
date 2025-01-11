@@ -7,4 +7,4 @@ update:
 	@mycli update
 
 test:
-	@scripts/tests/run_tests.sh
+	@scripts/tests/run_all_tests.sh
