@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Usage:
+#   test_helper_files.sh
+
 # Initialize
 # --------------------------------------------------------------------------------------------------
 
 CUR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-CLI_DIR=$(realpath "${CUR_DIR}/..")
+CLI_DIR=$(realpath "${CUR_DIR}/../..")
 TESTS_DIR="${CLI_DIR}/tests"
 HELPERS_DIR="${CLI_DIR}/core/helpers"
-TESTS_HELPERS_DIR="${TESTS_DIR}/core/test_helpers"
+TESTS_HELPERS_DIR="${TESTS_DIR}/core/helpers"
 
-source "${TESTS_DIR}/helpers.sh"
+source "${TESTS_DIR}/unit_test_helpers.sh"
 
 # Run tests
 # --------------------------------------------------------------------------------------------------

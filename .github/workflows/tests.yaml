@@ -25,9 +25,9 @@ jobs:
         set -euo pipefail
 
         modified_files=$(git diff --diff-filter=d --name-only HEAD^ HEAD)
-        echo "$(echo $modified_files | wc -l | xargs) modified file(s) (excluding deleted files; showing at most 20):"
+        echo "$(echo "$modified_files" | wc -l | awk '{print $1}') modified file(s) (excluding deleted files; showing at most 20):"
         echo "$modified_files" | sort | head -n 20
         echo "--------------------------------------------------------------------------------"
 
         # TODO: Run tests only for modified files
-        ./scripts/tests/run_tests.sh
+        ./scripts/tests/run_all_tests.sh

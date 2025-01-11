@@ -45,12 +45,12 @@ clean_path_name() {
     #
     # Usage:
     #   clean_path_name <path> <to_remove>
-    local -r path=$1
+    local -r path_name=$1
     local -r to_remove="$2"
     if [[ -z "$to_remove" ]]; then
-        echo "$path"
+        echo "$path_name"
     else
-        echo "$path" | sed -E "s:^${to_remove}/*::"
+        echo "$path_name" | sed -E "s:^${to_remove}/*::"
     fi
 }
 
@@ -59,12 +59,12 @@ get_all_shell_files() {
     #
     # Usage:
     #   get_all_shell_files [<path>]
-    local -r path=${1:-$CLI_DIR}
-    find "$path" \
+    local -r path_name=${1:-$CLI_DIR}
+    find "$path_name" \
         -type f \
         -not -path '*/.git/*' \
-        -name '*.sh' | {
-        echo "${path}/mycli"
+        \( -name "*.sh" -o -name "*.bash" \) | {
+        echo "${path_name}/mycli"
         cat
     }
 }
@@ -74,8 +74,8 @@ get_all_files() {
     #
     # Usage:
     #   get_all_files [<path>]
-    local -r path=${1:-$CLI_DIR}
-    find "$path" \
+    local -r path_name=${1:-$CLI_DIR}
+    find "$path_name" \
         -type f \
         -not -path '*/.git/*' \
         -not -path '*/.pytest_cache/*' \
@@ -83,13 +83,22 @@ get_all_files() {
         -not -name '.DS_Store'
 }
 
+get_all_command_files() {
+    # Get all command files in a folder.
+    #
+    # Usage:
+    #   get_all_command_files [<path>]
+    local -r path_name=${1:-$CLI_DIR}
+    find "$path_name/commands" -maxdepth 2 -mindepth 2 -type f -name '*.sh'
+}
+
 get_all_helper_files() {
     # Get all helper files in a folder (excluding the file "constants.sh").
     #
     # Usage:
     #   get_all_helper_files [<path>]
-    local -r path=${1:-$CLI_DIR}
-    find "$path/core/helpers" \
+    local -r path_name=${1:-$CLI_DIR}
+    find "$path_name/core/helpers" \
         -maxdepth 1 \
         -type f \
         -name '*.sh' \
@@ -102,7 +111,7 @@ get_all_test_helper_files() {
     # Usage:
     #   get_all_test_helper_files [<path>]
     local -r tests_dir=${1:-$TESTS_DIR}
-    find "${tests_dir}/core/test_helpers" -type f -name 'test_*.sh'
+    find "${tests_dir}/core/helpers" -type f -name 'test_*.sh'
 }
 
 # Utils
@@ -231,8 +240,8 @@ check_forbidden_cmd_name() {
     #
     # Usage:
     #   check_forbidden_cmd_name [<path>]
-    local -r path=${1:-$CLI_DIR}
-    find "$path/commands" -type d \( -name 'update' -o -name 'version' \) -o -type f -name '* *.sh'
+    local -r path_name=${1:-$CLI_DIR}
+    find "$path_name/commands" -type d \( -name 'update' -o -name 'version' \) -o -type f -name '* *.sh'
 }
 
 has_exactly_one_line_at_the_end() {

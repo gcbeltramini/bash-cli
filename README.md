@@ -148,7 +148,7 @@ For more details on code organization and content, check these files:
    1. To run [ShellCheck](https://github.com/koalaman/shellcheck) (a static analysis tool for shell
    scripts): `shellcheck --shell=bash /path/to/shell/file.sh`
    2. To run unit tests with [shUnit2](https://github.com/kward/shunit2) (a unit test framework for
-   bash scripts), run a test file from the [tests](tests) folder. For example: `tests/core/test_helpers/test_echo.sh`
+   bash scripts), run a test file from the [tests](tests) folder. For example: `tests/core/helpers/test_echo.sh`
 
 ## Troubleshoot
 
