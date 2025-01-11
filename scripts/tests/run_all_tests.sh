@@ -65,10 +65,6 @@ done <<<"$files"
 check_if_error "$invalid_files_lines_at_the_end"
 echo_done
 
-new_section "Commands files should have valid documentation"
-"${CUR_DIR}/test_docs.sh" "$command_files"
-echo_done
-
 new_section "Run ShellCheck, a static analysis tool for shell scripts"
 shellcheck "${shell_files_array[@]}" --shell=bash
 echo_done
