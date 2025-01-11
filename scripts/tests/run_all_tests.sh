@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Usage:
+#   run_all_tests.sh
+
 # Initialize
 # --------------------------------------------------------------------------------------------------
 
@@ -9,13 +12,14 @@ CLI_DIR=$(realpath "${CUR_DIR}/../..")
 TESTS_DIR="${CLI_DIR}/tests"
 
 source "${CLI_DIR}/core/helpers.sh"
-source "${TESTS_DIR}/helpers.sh"
+source "${TESTS_DIR}/unit_test_helpers.sh"
 
 # Files to test
 # --------------------------------------------------------------------------------------------------
 
 shell_files=$(get_all_shell_files "$CLI_DIR")
 files=$(get_all_files "$CLI_DIR")
+command_files=$(get_all_command_files "$CLI_DIR")
 test_helper_files=$(get_all_test_helper_files "$TESTS_DIR")
 
 shell_files_array=()
@@ -29,14 +33,15 @@ done <<<"$shell_files"
 echo "Running tests for:"
 echo "- $(count_lines "$shell_files") shell files"
 echo "- $(count_lines "$files") files of any type"
+echo "- $(count_lines "$command_files") command files"
 echo "- $(count_lines "$test_helper_files") test helpers"
 
 new_section "Shell files should be valid"
-"${TESTS_DIR}/test_valid_shell_file.sh" "$shell_files"
+"${CUR_DIR}/test_valid_shell_file.sh" "$shell_files"
 echo_done
 
 new_section "All helper files should be valid and have tests"
-"${TESTS_DIR}"/test_helper_files.sh
+"${CUR_DIR}"/test_helper_files.sh
 echo_done
 
 new_section "All commands should have valid names"
@@ -58,6 +63,10 @@ while IFS= read -r file; do
     fi
 done <<<"$files"
 check_if_error "$invalid_files_lines_at_the_end"
+echo_done
+
+new_section "Commands files should have valid documentation"
+"${CUR_DIR}/test_docs.sh" "$command_files"
 echo_done
 
 new_section "Run ShellCheck, a static analysis tool for shell scripts"

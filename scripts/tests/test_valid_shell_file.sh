@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Usage:
+#   test_valid_shell_file.sh <shell_files>
+
 # Initialize
 # --------------------------------------------------------------------------------------------------
 
 shell_files=$1
+
 CUR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-CLI_DIR=$(realpath "${CUR_DIR}/..")
+CLI_DIR=$(realpath "${CUR_DIR}/../..")
 TESTS_DIR="${CLI_DIR}/tests"
 
-source "${TESTS_DIR}/helpers.sh"
+source "${TESTS_DIR}/unit_test_helpers.sh"
 
 desired_shebang="#!/usr/bin/env "
 desired_set="set -euo pipefail"
@@ -44,7 +48,7 @@ new_section_level_2 "All shell files should start with '${desired_shebang}'..."
 check_if_error "$invalid_files_shebang"
 
 new_section_level_2 "All shell files should have '${desired_set}' at the top (line 2 or 3)..."
-allow_list_regex=".*/core/cli_root/autocomplete.sh$"
+allow_list_regex=".*/core/cli_root/autocomplete.*sh$"
 invalid_files_set=$(remove_from_list "$invalid_files_set" "$allow_list_regex")
 check_if_error "$invalid_files_set"
 
