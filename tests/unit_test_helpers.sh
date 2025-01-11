@@ -24,7 +24,7 @@ echo_error() {
     # Usage:
     #   echo_error <message>
     local -r message=$1
-    echo >&2 -e "\033[31mERROR:\033[0m ${message}"
+    echo >&2 -e "\033[31m[ERROR]\033[0m ${message}"
 }
 
 get_test_running_message() {
@@ -34,7 +34,7 @@ get_test_running_message() {
     #   get_test_running_message <test_file> [<path_to_remove>]
     local -r test_file=$1
     local -r path_to_remove=${2:-}
-    echo "Running test from '$(clean_path_name "$test_file" "$path_to_remove")'"
+    echo "Running tests from '$(clean_path_name "$test_file" "$path_to_remove")'"
 }
 
 # Files
@@ -44,9 +44,9 @@ clean_path_name() {
     # Remove path from path name to make it shorter.
     #
     # Usage:
-    #   clean_path_name <path> <to_remove>
+    #   clean_path_name <path> [<to_remove>]
     local -r path_name=$1
-    local -r to_remove="$2"
+    local -r to_remove=${2:-}
     if [[ -z "$to_remove" ]]; then
         echo "$path_name"
     else
@@ -114,11 +114,20 @@ get_all_test_helper_files() {
     find "${tests_dir}/core/helpers" -type f -name 'test_*.sh'
 }
 
+get_all_test_files() {
+    # Get all test files in a folder.
+    #
+    # Usage:
+    #   get_all_test_files [<path>]
+    local -r tests_dir=${1:-$TESTS_DIR}
+    find "$tests_dir" -type f -name 'test_*.sh'
+}
+
 # Utils
 # --------------------------------------------------------------------------------------------------
 
 check_if_error() {
-    # Check if there are files with error. If there are, diplay error message and exit with error;
+    # Check if there are files with error. If there are, display error message and exit with error;
     # otherwise, display success message.
     #
     # Usage:
@@ -219,11 +228,11 @@ has_shellcheck_all_disabled() {
     done <"$file"
 }
 
-check_executable() {
+find_not_executable() {
     # Check if specific files are executable.
     #
     # Usage:
-    #   check_executable <parent_dir>
+    #   find_not_executable <parent_dir>
     local -r parent_dir=$1
     find \
         "${parent_dir}/commands" "${parent_dir}/tests" \
@@ -233,13 +242,13 @@ check_executable() {
         -print
 }
 
-check_forbidden_cmd_name() {
+find_forbidden_cmd_names() {
     # Check if there are commands with forbidden names:
     # - "update" and "version" can't be folder names
     # - files can't have spaces in their names
     #
     # Usage:
-    #   check_forbidden_cmd_name [<path>]
+    #   find_forbidden_cmd_names [<path>]
     local -r path_name=${1:-$CLI_DIR}
     find "$path_name/commands" -type d \( -name 'update' -o -name 'version' \) -o -type f -name '* *.sh'
 }
@@ -253,12 +262,12 @@ has_exactly_one_line_at_the_end() {
 
     if [[ -n "$(tail -c 1 "$file")" ]]; then
         # No empty line at the end
-        return 0
+        return 1
     elif tail -n 1 "$file" | grep -q '^ *$'; then
         # More than one empty line at the end
-        return 0
-    else
         return 1
+    else
+        return 0
     fi
 }
 
@@ -268,5 +277,19 @@ get_variable_def_or_fn_call() {
     # Usage:
     #   get_variable_def_or_fn_call <file>
     local -r file=$1
-    grep -vE '^(#|set|$| |.*\(\) \{|})' "$file" || :
+
+    local -r allowed_beginning_line=(
+        "#"
+        "set "
+        "$"
+        "[[:space:]]"
+        ".*\(\) \{"
+        "}"
+        "EOF"
+    )
+
+    # Join the elements using '|'
+    IFS='|' allowed_beginning_line_regex="${allowed_beginning_line[*]}"
+
+    grep -vE "^($allowed_beginning_line_regex)" "$file" || :
 }

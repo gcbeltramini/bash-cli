@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# Comments can be added here.
+
 set -euo pipefail
 
 ##? This section will not be parsed.

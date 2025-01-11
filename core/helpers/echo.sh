@@ -88,7 +88,7 @@ echo_done() {
 }
 
 echo_success() {
-  # Show sucess message.
+  # Show success message.
   #
   # Usage:
   #   echo_success
