@@ -9,7 +9,7 @@ _list_commands() {
   #
   # Examples:
   #   _list_commands "$MYCLI_HOME/commands" # --> "hello update version"
-  local -r commands_dir="$1"
+  local -r commands_dir=$1
 
   find "$commands_dir" \
     -maxdepth 1 \
@@ -28,8 +28,8 @@ _list_subcommands() {
   #
   # Examples:
   #   _list_subcommands "$MYCLI_HOME/commands" "hello" # --> "world"
-  local -r commands_dir="$1"
-  local -r command="$2"
+  local -r commands_dir=$1
+  local -r command=$2
 
   # Part of this code is the same as the CLI function `list_commands`
   find "$commands_dir" \
@@ -51,8 +51,8 @@ _extract_docopt_section() {
   # Examples:
   #   _extract_docopt_section "$help" "usage"
   #   _extract_docopt_section "$help" "options"
-  local -r help="$1"
-  local -r section="$2"
+  local -r help=$1
+  local -r section=$2
   echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '$d' | tail -n +2
 }
 
@@ -64,9 +64,9 @@ _find_usage_lines() {
   #
   # Examples:
   #   _find_usage_lines "$help" "hello" "world" # --> "hello world ..."
-  local -r help="$1"
-  local -r cmd1="$2"
-  local -r cmd2="$3"
+  local -r help=$1
+  local -r cmd1=$2
+  local -r cmd2=$3
 
   local -r docopt_usage=$(_extract_docopt_section "$help" "usage")
   echo "$docopt_usage" | grep "^ *$cmd1  *$cmd2 " || :
@@ -80,7 +80,7 @@ _extract_parameters() {
   #
   # Examples:
   #   _extract_parameters "$usage" # --> "--foo --help --some-flag"
-  local -r usage="$1"
+  local -r usage=$1
 
   # Extract the parameters that:
   # - start with a dash ("-")
@@ -89,7 +89,7 @@ _extract_parameters() {
   # - exclude the 'parameter' "--"
   echo "$usage" |
     grep -oE -- '[^[a-zA-Z0-9_<]-[^] =,]+' |
-    sed 's/^ *//' |
+    sed 's/^[[:space:]]*//' |
     grep -vE '^--$' || :
 }
 
@@ -101,14 +101,14 @@ _extract_additional_commands() {
   #
   # Examples:
   #   _extract_additional_commands "$usage_lines" # --> "foo ..."
-  local -r usage_line="$1"
+  local -r usage_line=$1
 
   echo "$usage_line" |
-    sed 's/^[[:space:]]*//' |                        # remove spaces from the beginning
-    cut -d' ' -f3- |                                 # remove the first two words
-    tr '[]()|' ' ' |                                 # replace brackets, parentheses and pipes with spaces
-    grep -o -- '[^ ]*' |                             # extract words
-    sed 's/^[<-].*$// ; s/^options$//  ; /^$/d' || : # remove parameters and empty lines
+    sed 's/^[[:space:]]*//' |                       # remove spaces from the beginning
+    cut -d' ' -f3- |                                # remove the first two words
+    tr '[]()|' ' ' |                                # replace brackets, parentheses and pipes with spaces
+    grep -o -- '[^ ]*' |                            # extract words
+    sed 's/^[<-].*$// ; s/^options$// ; /^$/d' || : # remove parameters and empty lines
 }
 
 _extract_arguments() {
@@ -120,12 +120,20 @@ _extract_arguments() {
   #
   # Examples:
   #   _extract_arguments "$help" "hello" "world" # --> "--foo --help --some-flag abc"
-  local -r help="$1"
-  local -r cmd1="$2"
-  local -r cmd2="$3"
+  local -r help=$1
+  local -r cmd1=$2
+  local -r cmd2=$3
+
+  # Add "--help" because it's always available and is normally not declared in the usage line
+  local -r help_param="--help"
 
   # Extract usage from the help message
   local -r usage_lines=$(_find_usage_lines "$help" "$cmd1" "$cmd2")
+
+  if [[ -z "$usage_lines" ]]; then
+    echo "$help_param"
+    return 0
+  fi
 
   # Extract the "Options" section when "[options]" is declared in the usage line
   if grep -q '\[options\]' <<<"$usage_lines"; then
@@ -140,8 +148,7 @@ _extract_arguments() {
   # Extract additional commands from the usage line
   local -r additional_commands=$(_extract_additional_commands "$usage_lines")
 
-  # Add "--help" because it's always available and is normally not declared in the usage line
-  echo -e "$params\n$additional_commands\n--help"
+  echo -e "$params\n$additional_commands\n$help_param"
 }
 
 _mycli_completions() {
@@ -151,8 +158,8 @@ _mycli_completions() {
   # It autocompletes the first and second arguments of the CLI, possible additional commands and
   # parameters:
   #   mycli <cmd1> <cmd2> <cmd3>... --param1 ...
-  local -r cur="${COMP_WORDS[COMP_CWORD]}"
-  local -r prev="${COMP_WORDS[COMP_CWORD - 1]}"
+  local -r cur=${COMP_WORDS[COMP_CWORD]}
+  local -r prev=${COMP_WORDS[COMP_CWORD - 1]}
   local -r commands_dir="${MYCLI_HOME}/commands"
 
   if [ ! -d "$commands_dir" ]; then
@@ -170,22 +177,33 @@ _mycli_completions() {
 
   # Case 2: The user is completing <cmd2> (the second argument)
   elif [[ $COMP_CWORD -eq 2 ]]; then
+
+    if [[ $prev = "update" || $prev = "version" ]]; then
+      return 0
+    fi
+
     # Define possible completions for <cmd2>
     local -r cmds2=$(_list_subcommands "$commands_dir" "$prev")
+
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$cmds2" -- "$cur"))
     return 0
 
   # Case 3: The user is completing the parameters or other commands
   else
-    local args
     local -r help=$(mycli "${COMP_WORDS[1]}" "${COMP_WORDS[2]}" --help)
-    args=$(_extract_arguments "$help" "${COMP_WORDS[1]}" "${COMP_WORDS[2]}")
+    local -r all_args=$(_extract_arguments "$help" "${COMP_WORDS[1]}" "${COMP_WORDS[2]}")
 
     # Remove arguments that were already typed by the user
+    local args=$all_args
     for ((i = 3; i < COMP_CWORD; i++)); do
       args=$(grep -v "^${COMP_WORDS[i]}" <<<"$args")
     done
+
+    if [[ -z "$args" ]]; then
+      # No completions available
+      return 0
+    fi
 
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$args" -- "$cur"))
