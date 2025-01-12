@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -o pipefail
 
-_list_commands() {
+_mycli_list_commands() {
   # List all commands available in the CLI.
   #
   # Usage:
-  #   _list_commands <commands_dir>
+  #   _mycli_list_commands <commands_dir>
   #
   # Examples:
-  #   _list_commands "$MYCLI_HOME/commands" # --> "hello update version"
+  #   _mycli_list_commands "$MYCLI_HOME/commands" # --> "hello update version"
   local -r commands_dir=$1
 
   find "$commands_dir" \
@@ -20,14 +20,14 @@ _list_commands() {
   echo "version"
 }
 
-_list_subcommands() {
+_mycli_list_subcommands() {
   # List all subcommands available in the CLI.
   #
   # Usage:
-  #   _list_subcommands <commands_dir> <command>
+  #   _mycli_list_subcommands <commands_dir> <command>
   #
   # Examples:
-  #   _list_subcommands "$MYCLI_HOME/commands" "hello" # --> "world"
+  #   _mycli_list_subcommands "$MYCLI_HOME/commands" "hello" # --> "world"
   local -r commands_dir=$1
   local -r command=$2
 
@@ -42,44 +42,44 @@ _list_subcommands() {
     sed "s:\.sh$::"
 }
 
-_extract_docopt_section() {
+_mycli_extract_docopt_section() {
   # Extract a section from the help message of a command (the section name is not returned).
   #
   # Usage:
-  #   _extract_docopt_section <help> <section>
+  #   _mycli_extract_docopt_section <help> <section>
   #
   # Examples:
-  #   _extract_docopt_section "$help" "usage"
-  #   _extract_docopt_section "$help" "options"
+  #   _mycli_extract_docopt_section "$help" "usage"
+  #   _mycli_extract_docopt_section "$help" "options"
   local -r help=$1
   local -r section=$2
   echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '$d' | tail -n +2
 }
 
-_find_usage_lines() {
+_mycli_find_usage_lines() {
   # Find the usage line in the help message of a command.
   #
   # Usage:
-  #   _find_usage_lines <help> <cmd1> <cmd2>
+  #   _mycli_find_usage_lines <help> <cmd1> <cmd2>
   #
   # Examples:
-  #   _find_usage_lines "$help" "hello" "world" # --> "hello world ..."
+  #   _mycli_find_usage_lines "$help" "hello" "world" # --> "hello world ..."
   local -r help=$1
   local -r cmd1=$2
   local -r cmd2=$3
 
-  local -r docopt_usage=$(_extract_docopt_section "$help" "usage")
+  local -r docopt_usage=$(_mycli_extract_docopt_section "$help" "usage")
   echo "$docopt_usage" | grep "^ *$cmd1  *$cmd2 " || :
 }
 
-_extract_parameters() {
+_mycli_extract_parameters() {
   # Extract the parameters from the usage of a command.
   #
   # Usage:
-  #   _extract_parameters <usage>
+  #   _mycli_extract_parameters <usage>
   #
   # Examples:
-  #   _extract_parameters "$usage" # --> "--foo --help --some-flag"
+  #   _mycli_extract_parameters "$usage" # --> "--foo --help --some-flag"
   local -r usage=$1
 
   # Extract the parameters that:
@@ -93,14 +93,14 @@ _extract_parameters() {
     grep -vE '^--$' || :
 }
 
-_extract_additional_commands() {
+_mycli_extract_additional_commands() {
   # Extract additional commands from the usage of a command.
   #
   # Usage:
-  #   _extract_additional_commands <usage_lines>
+  #   _mycli_extract_additional_commands <usage_lines>
   #
   # Examples:
-  #   _extract_additional_commands "$usage_lines" # --> "foo ..."
+  #   _mycli_extract_additional_commands "$usage_lines" # --> "foo ..."
   local -r usage_line=$1
 
   echo "$usage_line" |
@@ -111,15 +111,15 @@ _extract_additional_commands() {
     sed 's/^[<-].*$// ; s/^options$// ; /^$/d' || : # remove parameters and empty lines
 }
 
-_extract_arguments() {
+_mycli_extract_arguments() {
   # Extract the arguments from the help message of a command. The help content must follow the
   # docopt format.
   #
   # Usage:
-  #   _extract_arguments <help> <cmd1> <cmd2>
+  #   _mycli_extract_arguments <help> <cmd1> <cmd2>
   #
   # Examples:
-  #   _extract_arguments "$help" "hello" "world" # --> "--foo --help --some-flag abc"
+  #   _mycli_extract_arguments "$help" "hello" "world" # --> "--foo --help --some-flag abc"
   local -r help=$1
   local -r cmd1=$2
   local -r cmd2=$3
@@ -128,7 +128,7 @@ _extract_arguments() {
   local -r help_param="--help"
 
   # Extract usage from the help message
-  local -r usage_lines=$(_find_usage_lines "$help" "$cmd1" "$cmd2")
+  local -r usage_lines=$(_mycli_find_usage_lines "$help" "$cmd1" "$cmd2")
 
   if [[ -z "$usage_lines" ]]; then
     echo "$help_param"
@@ -137,16 +137,16 @@ _extract_arguments() {
 
   # Extract the "Options" section when "[options]" is declared in the usage line
   if grep -q '\[options\]' <<<"$usage_lines"; then
-    local -r docopt_options=$(_extract_docopt_section "$help" "options")
+    local -r docopt_options=$(_mycli_extract_docopt_section "$help" "options")
   else
     local -r docopt_options=""
   fi
 
   # Extract parameters from the usage line and possibly the "Options" section
-  local -r params=$(_extract_parameters "$usage_lines $docopt_options")
+  local -r params=$(_mycli_extract_parameters "$usage_lines $docopt_options")
 
   # Extract additional commands from the usage line
-  local -r additional_commands=$(_extract_additional_commands "$usage_lines")
+  local -r additional_commands=$(_mycli_extract_additional_commands "$usage_lines")
 
   echo -e "$params\n$additional_commands\n$help_param"
 }
@@ -169,7 +169,7 @@ _mycli_completions() {
   # Case 1: The user is completing <cmd1> (the first argument)
   if [[ $COMP_CWORD -eq 1 ]]; then
     # Define possible completions for <cmd1>
-    local -r cmds1=$(_list_commands "$commands_dir")
+    local -r cmds1=$(_mycli_list_commands "$commands_dir")
 
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$cmds1" -- "$cur"))
@@ -183,7 +183,7 @@ _mycli_completions() {
     fi
 
     # Define possible completions for <cmd2>
-    local -r cmds2=$(_list_subcommands "$commands_dir" "$prev")
+    local -r cmds2=$(_mycli_list_subcommands "$commands_dir" "$prev")
 
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$cmds2" -- "$cur"))
@@ -192,7 +192,7 @@ _mycli_completions() {
   # Case 3: The user is completing the parameters or other commands
   else
     local -r help=$(mycli "${COMP_WORDS[1]}" "${COMP_WORDS[2]}" --help)
-    local -r all_args=$(_extract_arguments "$help" "${COMP_WORDS[1]}" "${COMP_WORDS[2]}")
+    local -r all_args=$(_mycli_extract_arguments "$help" "${COMP_WORDS[1]}" "${COMP_WORDS[2]}")
 
     # Remove arguments that were already typed by the user
     local args=$all_args
