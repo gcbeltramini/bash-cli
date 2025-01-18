@@ -62,7 +62,8 @@ while IFS= read -r file; do
         invalid_files_lines_at_the_end+="\n$file"
     fi
 done <<<"$files"
-allow_list_regex=".*/tests/resources/commands/problematic file.sh$"
+allow_list_regex=".*/tests/resources/commands/problematic file.sh$
+.*/tests/resources/commands/no_newline_at_the_end.txt$"
 invalid_files_lines_at_the_end=$(remove_from_list "$invalid_files_lines_at_the_end" "$allow_list_regex")
 check_if_error "$invalid_files_lines_at_the_end"
 echo_done
