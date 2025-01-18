@@ -25,7 +25,7 @@ find_relevant_files() {
     #
     # Options:
     #   <path>       Path to the directory to search for files [default: .]
-    #   <find-args>  Additional arguments to pass to the find command [default: "-print0"]
+    #   <find-args>  Additional arguments to pass to the find command
     local -r path_name=${1:-.}
     shift 1 || true
     local find_args=("$@")
