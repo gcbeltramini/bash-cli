@@ -83,7 +83,7 @@ EOF
 test__mycli_extract_parameters() {
   local result expected
 
-  result=$(_mycli_extract_parameters "foo bar baz -q --v --qwe=1 --qwe-rty <some-param> [--some-param=<x> --my-flag]")
+  result=$(_mycli_extract_parameters "$(echo -e "foo bar baz -q --v --qwe=1 --qwe-rty <some-param> -- [--some-param=<x> --my-flag] \n-f FILE  File name")")
   expected=$(
     cat <<-EOF
 	-q
@@ -92,13 +92,13 @@ test__mycli_extract_parameters() {
 	--qwe-rty
 	--some-param
 	--my-flag
+	-f
 EOF
   )
   assertEquals "$expected" "$result"
 
   # Concatenating the usage line and the "Options" section
-  # (it doesn't get the parameter "-f" if it's directly preceded by "\n")
-  result=$(_mycli_extract_parameters "$(echo -e "foo bar --foo Options:\n--bar  Some description\n -f, --foo")")
+  result=$(_mycli_extract_parameters "$(echo -e "foo bar --foo Options:\n--bar  Some description\n-f, --foo")")
   expected=$(
     cat <<-EOF
 	--foo
@@ -118,7 +118,8 @@ test__mycli_extract_additional_commands() {
   assertEquals "$expected" "$result"
 
   result=$(_mycli_extract_additional_commands "my program (run [--fast] | jump [--high])")
-  expected=$(cat <<-EOF
+  expected=$(
+    cat <<-EOF
 	run
 	jump
 EOF
@@ -127,7 +128,8 @@ EOF
 
   # The function works by removing everything after the commands, so let's test a few different cases
   result=$(_mycli_extract_additional_commands "foo bar qwerty asdf -x [-y <pos-param> --my-param=<x> --some-flag]")
-  expected=$(cat <<-EOF
+  expected=$(
+    cat <<-EOF
 	qwerty
 	asdf
 EOF
@@ -142,7 +144,8 @@ EOF
 
   # Test with multiple usage lines and spaces in the beginning
   result=$(_mycli_extract_additional_commands "$(echo -e "  foo bar qwe rty <pos-param>\n  foo bar qwerty asdf -y")")
-  expected=$(cat <<-EOF
+  expected=$(
+    cat <<-EOF
 	qwe
 	rty
 	qwerty
@@ -156,7 +159,8 @@ test__mycli_extract_arguments() {
   local result expected
 
   result=$(_mycli_extract_arguments "$HELP" "some-command" "hello-world")
-  expected=$(cat <<-EOF
+  expected=$(
+    cat <<-EOF
 	--my-param
 	--some-flag
 	--my-param

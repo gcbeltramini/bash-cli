@@ -88,6 +88,7 @@ _mycli_extract_parameters() {
   # - end before any of "] =,": "--foo --foo=42 --bar]" or "-f, --foo" (only appears in the options)
   # - exclude the 'parameter' "--"
   echo "$usage" |
+    sed 's/^/ /' |
     grep -oE -- '[^[a-zA-Z0-9_<]-[^] =,]+' |
     sed 's/^[[:space:]]*//' |
     grep -vE '^--$' || :
