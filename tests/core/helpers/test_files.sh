@@ -19,7 +19,7 @@ test_find_relevant_files() {
     # result=$(find_relevant_files "tests/resources/commands" | xargs -0 -n 1 echo | sort)
     result=$(find_relevant_files "tests/resources/commands" | sort)
     expected=$(cat <<-EOF
-	tests/resources/commands/hello/hello-world.sh
+	tests/resources/commands/hello-world.sh
 	tests/resources/commands/no_newline_at_the_end.txt
 	tests/resources/commands/problematic file.sh
 	tests/resources/commands/update/.gitkeep
@@ -29,7 +29,7 @@ EOF
 
     result=$(find_relevant_files "tests/resources/commands" -name '*.sh' | sort)
     expected=$(cat <<-EOF
-	tests/resources/commands/hello/hello-world.sh
+	tests/resources/commands/hello-world.sh
 	tests/resources/commands/problematic file.sh
 EOF
     )
@@ -55,7 +55,7 @@ EOF
 
 test_has_exactly_one_line_at_the_end() {
     local result
-    assertTrue 'has_exactly_one_line_at_the_end "tests/resources/commands/hello/hello-world.sh"'
+    assertTrue 'has_exactly_one_line_at_the_end "tests/resources/commands/hello-world.sh"'
 
     assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"'
 
