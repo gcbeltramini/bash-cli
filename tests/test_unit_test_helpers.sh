@@ -78,7 +78,7 @@ test_find_not_executable() {
 test_find_forbidden_cmd_names() {
     local result expected
 
-    result=$(find_forbidden_cmd_names "tests/resources")
+    result=$(find_forbidden_cmd_names "tests/resources" | sort)
     expected=$(cat <<-EOF
 	tests/resources/commands/problematic file.sh
 	tests/resources/commands/update
