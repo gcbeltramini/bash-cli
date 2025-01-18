@@ -1,0 +1,2 @@
+This files doesn't end in a newline character.
+It is used in a unit test.
