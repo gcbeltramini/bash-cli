@@ -5,7 +5,7 @@ test_get_help() {
     local result expected
 
     result=$(get_help "$MOCK_COMMAND_PATH")
-    expected='This section will not be parsed.
+    expected='This section will not be parsed, but the first line will be used by the zsh autocomplete function.
 
 Usage:
   anything hello-world [<positional-param> --my-param=<x> --some-flag]
@@ -17,7 +17,7 @@ Options:
   --my-param=<x>  Some parameter [default: 123]
 
 Examples:
-  This section will not be parsed.'
+  This section will not be parsed, but the first line will be used by the zsh autocomplete function.'
     assertEquals "$expected" "$result"
 }
 

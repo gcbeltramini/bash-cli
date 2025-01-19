@@ -81,9 +81,15 @@ EOF
 }
 
 test__mycli_extract_parameters() {
-  local result expected
+  local result expected usage
 
-  result=$(_mycli_extract_parameters "$(echo -e "foo bar baz -q --v --qwe=1 --qwe-rty <some-param> -- [--some-param=<x> --my-flag] \n-f FILE  File name")")
+  usage=$(cat <<-EOF
+	foo bar baz -q --v --qwe=1 --qwe-rty <some-param> -- [--some-param=<x> --my-flag]
+	-f FILE  File name
+	--some_param=FILE_NAME  Some parameter
+EOF
+  )
+  result=$(_mycli_extract_parameters "$usage")
   expected=$(
     cat <<-EOF
 	-q
@@ -93,6 +99,7 @@ test__mycli_extract_parameters() {
 	--some-param
 	--my-flag
 	-f
+	--some_param
 EOF
   )
   assertEquals "$expected" "$result"
@@ -113,15 +120,16 @@ EOF
 test__mycli_extract_additional_commands() {
   local result expected
 
-  result=$(_mycli_extract_additional_commands "foo bar [<positional-param> --my-param=<x> --some-flag]")
+  result=$(_mycli_extract_additional_commands "foo bar [<positional-param> --my-param=<x> --some-flag --fname=FILE_NAME]")
   expected=""
   assertEquals "$expected" "$result"
 
-  result=$(_mycli_extract_additional_commands "my program (run [--fast] | jump [--high])")
+  result=$(_mycli_extract_additional_commands "my program (run [--fast] | jump [--high] | walk_around)")
   expected=$(
     cat <<-EOF
 	run
 	jump
+	walk_around
 EOF
   )
   assertEquals "$expected" "$result"
@@ -140,6 +148,9 @@ EOF
   assertEquals "$expected" "$result"
 
   result=$(_mycli_extract_additional_commands "foo bar qwerty asdf <pos-param> [-y --my-param=<x> --some-flag]")
+  assertEquals "$expected" "$result"
+
+  result=$(_mycli_extract_additional_commands "foo bar qwerty asdf <pos-param> [-y --my-param=<x> --some-flag] -f FILE")
   assertEquals "$expected" "$result"
 
   # Test with multiple usage lines and spaces in the beginning
@@ -194,9 +205,6 @@ oneTimeSetUp() {
 	Options:
 	  --my-param=<x>  Some parameter [default: 123]
 	  --another-param
-
-	Examples:
-	  This section will not be parsed, but the first line will be used by the zsh autocomplete function.
 EOF
   )
 }

@@ -53,7 +53,7 @@ _mycli_extract_docopt_section() {
   #   _mycli_extract_docopt_section "$help" "options"
   local -r help=$1
   local -r section=$2
-  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '$d' | tail -n +2
+  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '/^ *$/d' | tail -n +2
 }
 
 _mycli_find_usage_lines() {
@@ -105,11 +105,11 @@ _mycli_extract_additional_commands() {
   local -r usage_line=$1
 
   echo "$usage_line" |
-    sed 's/^[[:space:]]*//' |                       # remove spaces from the beginning
-    cut -d' ' -f3- |                                # remove the first two words
-    tr '[]()|' ' ' |                                # replace brackets, parentheses and pipes with spaces
-    grep -o -- '[^ ]*' |                            # extract words
-    sed 's/^[<-].*$// ; s/^options$// ; /^$/d' || : # remove parameters and empty lines
+    sed 's/^[[:space:]]*//' |                                # remove spaces from the beginning
+    cut -d' ' -f3- |                                         # remove the first two words
+    tr '[]()|' ' ' |                                         # replace brackets, parentheses and pipes with spaces
+    grep -o -- '[^ A-Z]*' |                                  # extract words
+    sed 's/^[<-].*$// ; /^_$/d ; s/^options$// ; /^$/d' || : # remove parameters and empty lines
 }
 
 _mycli_extract_arguments() {
