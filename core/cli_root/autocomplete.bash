@@ -53,7 +53,7 @@ _mycli_extract_docopt_section() {
   #   _mycli_extract_docopt_section "$help" "options"
   local -r help=$1
   local -r section=$2
-  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '/^ *$/d' | tail -n +2
+  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '/^[[:space:]]*$/d' | tail -n +2
 }
 
 _mycli_find_usage_lines() {
