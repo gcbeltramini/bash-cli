@@ -55,13 +55,13 @@ EOF
 }
 
 test_has_invalid_shebang() {
-    assertTrue 'has_invalid_shebang "#!/foo/bar " "tests/resources/commands/hello-world.sh"'
-    assertFalse 'has_invalid_shebang "#!/usr/bin/env " "tests/resources/commands/hello-world.sh"'
+    assertTrue 'has_invalid_shebang "#!/foo/bar " "tests/resources/commands/hello/hello-world.sh"'
+    assertFalse 'has_invalid_shebang "#!/usr/bin/env " "tests/resources/commands/hello/hello-world.sh"'
 }
 
 test_has_invalid_set() {
-    assertTrue 'has_invalid_set "set -e" "tests/resources/commands/hello-world.sh"'
-    assertFalse 'has_invalid_set "set -euo pipefail" "tests/resources/commands/hello-world.sh"'
+    assertTrue 'has_invalid_set "set -e" "tests/resources/commands/hello/hello-world.sh"'
+    assertFalse 'has_invalid_set "set -euo pipefail" "tests/resources/commands/hello/hello-world.sh"'
 }
 
 test_has_shellcheck_all_disabled() {

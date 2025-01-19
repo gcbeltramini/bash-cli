@@ -1,10 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-test__extract_docopt_section() {
+test__mycli_list_commands() {
   local result expected
 
-  result=$(_extract_docopt_section "$HELP" "usage")
+  result=$(_mycli_list_commands "$TEST_COMMANDS_PATH")
+  expected=$(
+    cat <<-EOF
+	update
+	hello
+	update
+	version
+EOF
+  )
+  assertEquals "$expected" "$result"
+}
+
+test__mycli_list_subcommands() {
+  local result expected
+
+  result=$(_mycli_list_subcommands "$TEST_COMMANDS_PATH" "update")
+  expected=""
+  assertEquals "$expected" "$result"
+
+  result=$(_mycli_list_subcommands "$TEST_COMMANDS_PATH" "version")
+  expected=""
+  assertEquals "$expected" "$result"
+
+  result=$(_mycli_list_subcommands "$TEST_COMMANDS_PATH" "hello")
+  expected="hello-world"
+  assertEquals "$expected" "$result"
+}
+
+test__mycli_extract_docopt_section() {
+  local result expected
+
+  result=$(_mycli_extract_docopt_section "$HELP" "usage")
   expected=$(
     cat <<-EOF
 	  some-command hello-world [<positional-param> --my-param=<x> --some-flag]
@@ -16,7 +47,7 @@ EOF
   )
   assertEquals "$expected" "$result"
 
-  result=$(_extract_docopt_section "$HELP" "options")
+  result=$(_mycli_extract_docopt_section "$HELP" "options")
   expected=$(
     cat <<-EOF
 	  --my-param=<x>  Some parameter [default: 123]
@@ -25,15 +56,15 @@ EOF
   )
   assertEquals "$expected" "$result"
 
-  result=$(_extract_docopt_section "$HELP" "no-section")
+  result=$(_mycli_extract_docopt_section "$HELP" "no-section")
   expected=""
   assertEquals "$expected" "$result"
 }
 
-test__find_usage_lines() {
+test__mycli_find_usage_lines() {
   local result expected
 
-  result=$(_find_usage_lines "$HELP" "some-command" "hello-world")
+  result=$(_mycli_find_usage_lines "$HELP" "some-command" "hello-world")
   expected=$(
     cat <<-EOF
 	  some-command hello-world [<positional-param> --my-param=<x> --some-flag]
@@ -44,15 +75,21 @@ EOF
   )
   assertEquals "$expected" "$result"
 
-  result=$(_find_usage_lines "$HELP" "foo" "bar")
+  result=$(_mycli_find_usage_lines "$HELP" "foo" "bar")
   expected="  foo bar --param=<x> --flag"
   assertEquals "$expected" "$result"
 }
 
-test__extract_parameters() {
-  local result expected
+test__mycli_extract_parameters() {
+  local result expected usage
 
-  result=$(_extract_parameters "foo bar baz -q --v --qwe=1 --qwe-rty <some-param> [--some-param=<x> --my-flag]")
+  usage=$(cat <<-EOF
+	foo bar baz -q --v --qwe=1 --qwe-rty <some-param> -- [--some-param=<x> --my-flag]
+	-f FILE  File name
+	--some_param=FILE_NAME  Some parameter
+EOF
+  )
+  result=$(_mycli_extract_parameters "$usage")
   expected=$(
     cat <<-EOF
 	-q
@@ -61,13 +98,14 @@ test__extract_parameters() {
 	--qwe-rty
 	--some-param
 	--my-flag
+	-f
+	--some_param
 EOF
   )
   assertEquals "$expected" "$result"
 
   # Concatenating the usage line and the "Options" section
-  # (it doesn't get the parameter "-f" if it's directly preceded by "\n")
-  result=$(_extract_parameters "$(echo -e "foo bar --foo Options:\n--bar  Some description\n -f, --foo")")
+  result=$(_mycli_extract_parameters "$(echo -e "foo bar --foo Options:\n--bar  Some description\n-f, --foo")")
   expected=$(
     cat <<-EOF
 	--foo
@@ -79,39 +117,46 @@ EOF
   assertEquals "$expected" "$result"
 }
 
-test__extract_additional_commands() {
+test__mycli_extract_additional_commands() {
   local result expected
 
-  result=$(_extract_additional_commands "foo bar [<positional-param> --my-param=<x> --some-flag]")
+  result=$(_mycli_extract_additional_commands "foo bar [<positional-param> --my-param=<x> --some-flag --fname=FILE_NAME]")
   expected=""
   assertEquals "$expected" "$result"
 
-  result=$(_extract_additional_commands "my program (run [--fast] | jump [--high])")
-  expected=$(cat <<-EOF
+  result=$(_mycli_extract_additional_commands "my program (run [--fast] | jump [--high] | walk_around)")
+  expected=$(
+    cat <<-EOF
 	run
 	jump
+	walk_around
 EOF
   )
   assertEquals "$expected" "$result"
 
   # The function works by removing everything after the commands, so let's test a few different cases
-  result=$(_extract_additional_commands "foo bar qwerty asdf -x [-y <pos-param> --my-param=<x> --some-flag]")
-  expected=$(cat <<-EOF
+  result=$(_mycli_extract_additional_commands "foo bar qwerty asdf -x [-y <pos-param> --my-param=<x> --some-flag]")
+  expected=$(
+    cat <<-EOF
 	qwerty
 	asdf
 EOF
   )
   assertEquals "$expected" "$result"
 
-  result=$(_extract_additional_commands "foo bar qwerty asdf [-y <pos-param> --my-param=<x> --some-flag]")
+  result=$(_mycli_extract_additional_commands "foo bar qwerty asdf [-y <pos-param> --my-param=<x> --some-flag]")
   assertEquals "$expected" "$result"
 
-  result=$(_extract_additional_commands "foo bar qwerty asdf <pos-param> [-y --my-param=<x> --some-flag]")
+  result=$(_mycli_extract_additional_commands "foo bar qwerty asdf <pos-param> [-y --my-param=<x> --some-flag]")
+  assertEquals "$expected" "$result"
+
+  result=$(_mycli_extract_additional_commands "foo bar qwerty asdf <pos-param> [-y --my-param=<x> --some-flag] -f FILE")
   assertEquals "$expected" "$result"
 
   # Test with multiple usage lines and spaces in the beginning
-  result=$(_extract_additional_commands "$(echo -e "  foo bar qwe rty <pos-param>\n  foo bar qwerty asdf -y")")
-  expected=$(cat <<-EOF
+  result=$(_mycli_extract_additional_commands "$(echo -e "  foo bar qwe rty <pos-param>\n  foo bar qwerty asdf -y")")
+  expected=$(
+    cat <<-EOF
 	qwe
 	rty
 	qwerty
@@ -121,11 +166,12 @@ EOF
   assertEquals "$expected" "$result"
 }
 
-test__extract_arguments() {
+test__mycli_extract_arguments() {
   local result expected
 
-  result=$(_extract_arguments "$HELP" "some-command" "hello-world")
-  expected=$(cat <<-EOF
+  result=$(_mycli_extract_arguments "$HELP" "some-command" "hello-world")
+  expected=$(
+    cat <<-EOF
 	--my-param
 	--some-flag
 	--my-param
@@ -141,11 +187,13 @@ EOF
 }
 
 oneTimeSetUp() {
-  . core/cli_root/autocomplete.sh
+  . core/cli_root/autocomplete.bash
+
+  TEST_COMMANDS_PATH="tests/resources/commands"
 
   HELP=$(
     cat <<-EOF
-	This section will not be parsed.
+	This section will not be parsed, but the first line will be used by the zsh autocomplete function.
 
 	Usage:
 	  some-command hello-world [<positional-param> --my-param=<x> --some-flag]
@@ -157,9 +205,6 @@ oneTimeSetUp() {
 	Options:
 	  --my-param=<x>  Some parameter [default: 123]
 	  --another-param
-
-	Examples:
-	  This section will not be parsed.
 EOF
   )
 }

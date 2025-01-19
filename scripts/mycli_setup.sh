@@ -81,14 +81,23 @@ for shell_file in "${shell_files[@]}"; do
     sed -e "/^[[:space:]]*$/N;/^\n[[:space:]]*$/D" -e "/^[[:space:]]*$start_pattern/,/$end_pattern/d" "$shell_file" | sponge "$shell_file"
     show_done
 
+    if [[ $shell_file == *".bash_profile" ]]; then
+        completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.bash"
+    elif [[ $shell_file == *".zshrc" ]]; then
+        completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.zsh"
+    else
+        echo "Shell file '$shell_file' not recognized. Skipping..."
+        continue
+    fi
+
     echo -n "Appending the CLI configuration to '$shell_file'... "
     # shellcheck disable=SC2016
     # You can add here custom functions, aliases, environment variables.
     to_add="
 
 $start_pattern
-export MYCLI_HOME=\"${cli_dir}\""'
-[ -f "$MYCLI_HOME/core/cli_root/autocomplete.sh" ] && source "$MYCLI_HOME/core/cli_root/autocomplete.sh"
+export MYCLI_HOME=\"$cli_dir\"
+[ -f \"$completion_filename\" ] && source \"$completion_filename\""'
 export PATH="${MYCLI_HOME}:${PATH}"
 '"$end_pattern"
     echo "$to_add" >>"$shell_file"

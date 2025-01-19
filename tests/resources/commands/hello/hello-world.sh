@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-##? This section will not be parsed.
+##? This section will not be parsed, but the first line will be used by the zsh autocomplete function.
 ##?
 ##? Usage:
 ##?   anything hello-world [<positional-param> --my-param=<x> --some-flag]
@@ -16,7 +16,7 @@ set -euo pipefail
 ##?   --my-param=<x>  Some parameter [default: 123]
 ##?
 ##? Examples:
-##?   This section will not be parsed.
+##?   This section will not be parsed, but the first line will be used by the zsh autocomplete function.
 
 source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
