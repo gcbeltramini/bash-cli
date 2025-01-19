@@ -120,7 +120,7 @@ get_all_test_files() {
     # Usage:
     #   get_all_test_files [<path>]
     local -r tests_dir=${1:-$TESTS_DIR}
-    find "$tests_dir" -type f -name 'test_*.sh'
+    find "$tests_dir" -type f \( -name 'test_*.sh' -o -name 'test_*.zsh' \)
 }
 
 # Utils
