@@ -64,7 +64,7 @@ echo_error() {
     # Examples:
     #   echo_error "Your command failed."
     local -r text=$1
-    echo_color >&2 "red" "ERROR: ${text}"
+    echo_color >&2 "red" "[ERROR] ${text}"
 }
 
 echo_warn() {
@@ -76,7 +76,31 @@ echo_warn() {
     # Examples:
     #   echo_warn "This is a warning message."
     local -r text=$1
-    echo_color >&2 "yellow" "WARNING: ${text}"
+    echo_color >&2 "yellow" "[WARNING] ${text}"
+}
+
+echo_info() {
+    # Show info message.
+    #
+    # Usage:
+    #   echo_info <text>
+    #
+    # Examples:
+    #   echo_info "This is an info message."
+    local -r text=$1
+    echo_color >&2 "no_color" "[INFO] ${text}"
+}
+
+echo_debug() {
+    # Show debug message.
+    #
+    # Usage:
+    #   echo_debug <text>
+    #
+    # Examples:
+    #   echo_debug "This is a debug message."
+    local -r text=$1
+    echo_color >&2 "gray" "[DEBUG] ${text}"
 }
 
 echo_done() {

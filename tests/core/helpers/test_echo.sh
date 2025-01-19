@@ -36,7 +36,7 @@ test_echo_error() {
     local result expected
 
     result=$(echo_error "an error message" 2>&1)
-    expected=$(echo -e '\x1b[31mERROR: an error message\x1b[0m')
+    expected=$(echo -e '\x1b[31m[ERROR] an error message\x1b[0m')
     assertEquals "$expected" "$result"
 }
 
@@ -44,7 +44,23 @@ test_echo_warn() {
     local result expected
 
     result=$(echo_warn "a warning message" 2>&1)
-    expected=$(echo -e '\x1b[33mWARNING: a warning message\x1b[0m')
+    expected=$(echo -e '\x1b[33m[WARNING] a warning message\x1b[0m')
+    assertEquals "$expected" "$result"
+}
+
+test_echo_info() {
+    local result expected
+
+    result=$(echo_info "My info message" 2>&1)
+    expected=$(echo -e '\x1b[0m[INFO] My info message\x1b[0m')
+    assertEquals "$expected" "$result"
+}
+
+test_echo_debug() {
+    local result expected
+
+    result=$(echo_debug "This is a debug message" 2>&1)
+    expected=$(echo -e '\x1b[90m[DEBUG] This is a debug message\x1b[0m')
     assertEquals "$expected" "$result"
 }
 

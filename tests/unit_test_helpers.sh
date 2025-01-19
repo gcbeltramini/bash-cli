@@ -254,6 +254,8 @@ find_forbidden_cmd_names() {
 }
 
 has_exactly_one_line_at_the_end() {
+    # COPIED FROM core/helpers/files.sh TO AVOID SOURCING EXTERNAL FILES.
+    #
     # Check if file has exactly one empty line at the end.
     #
     # Usage:
@@ -265,7 +267,7 @@ has_exactly_one_line_at_the_end() {
         return 1
     elif tail -n 1 "$file" | grep -q '^ *$'; then
         # More than one empty line at the end
-        return 1
+        return 2
     else
         return 0
     fi

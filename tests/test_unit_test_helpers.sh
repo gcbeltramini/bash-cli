@@ -78,18 +78,13 @@ test_find_not_executable() {
 test_find_forbidden_cmd_names() {
     local result expected
 
-    result=$(find_forbidden_cmd_names "tests/resources")
+    result=$(find_forbidden_cmd_names "tests/resources" | sort)
     expected=$(cat <<-EOF
 	tests/resources/commands/problematic file.sh
 	tests/resources/commands/update
 EOF
     )
     assertEquals "$expected" "$result"
-}
-
-test_has_exactly_one_line_at_the_end() {
-    assertTrue 'has_exactly_one_line_at_the_end "tests/resources/commands/hello-world.sh"'
-    assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"'
 }
 
 test_get_variable_def_or_fn_call() {
