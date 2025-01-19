@@ -127,28 +127,28 @@ EOF
 test__mycli_extract_arguments_with_descriptions() {
   local result expected
 
-#   result=$(_mycli_extract_arguments_with_descriptions "$HELP" "foo" "bar")
-#   expected=$(
-#     cat <<-EOF
-# 	--directory:Some directory [default: ./]
-# 	--coefficient:The K coefficient [default: 2.95]
-# 	--help:Show help message
-# EOF
-#   )
-#   assertEquals "$expected" "$result"
+  result=$(_mycli_extract_arguments_with_descriptions "$HELP" "foo" "bar")
+  expected=$(
+    cat <<-EOF
+	--directory:Some directory [default: ./]
+	--coefficient:The K coefficient [default: 2.95]
+	--help:Show help message
+EOF
+  )
+  assertEquals "$expected" "$result"
 
-#   result=$(_mycli_extract_arguments_with_descriptions "$HELP" "some-command" "hello-world")
-#   expected=$(
-#     cat <<-EOF
-# 	--my-param:Some parameter [default: 123]
-# 	--my-flag:Some flag
-# 	command_y:Some Y command
-# 	cmd1:<no description>
-# 	cmd2:<no description>
-# 	--help:Show help message
-# EOF
-#   )
-#   assertEquals "$expected" "$result"
+  result=$(_mycli_extract_arguments_with_descriptions "$HELP" "some-command" "hello-world")
+  expected=$(
+    cat <<-EOF
+	--my-param:Some parameter [default: 123]
+	--my-flag:Some flag
+	command_y:Some Y command
+	cmd1:<no description>
+	cmd2:<no description>
+	--help:Show help message
+EOF
+  )
+  assertEquals "$expected" "$result"
 
   result=$(_mycli_extract_arguments_with_descriptions "$HELP" "some-command" "with-opts")
   expected=$(

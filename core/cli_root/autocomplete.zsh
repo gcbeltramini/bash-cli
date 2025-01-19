@@ -56,7 +56,7 @@ _mycli_extract_docopt_section() {
   #   _mycli_extract_docopt_section "$help" "options"
   local -r help=$1
   local -r section=$2
-  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '/^ *$/d' | tail -n +2
+  echo "$help" | sed -n "/^$section:/I,/^$/p" | sed '/^[[:space:]]*$/d' | tail -n +2
 }
 
 _mycli_find_usage_lines() {
@@ -291,7 +291,6 @@ _mycli_completions() {
 
     # Convert the multiline string to an array
     local -ra args_with_description_array=("${(f)args_with_description}")
-
     _describe 'mycli parameters' args_with_description_array
     return 0
   fi
