@@ -207,7 +207,7 @@ pos2='CDE'"
 
 oneTimeSetUp() {
     export CLI_DIR=$PWD
-    MOCK_COMMAND_PATH="tests/resources/commands/hello-world.sh"
+    MOCK_COMMAND_PATH="tests/resources/commands/hello/hello-world.sh"
     . core/helpers/cli_parse_args.sh
 }
 
