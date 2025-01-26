@@ -41,7 +41,7 @@ new_section "Shell files should be valid"
 echo_done
 
 new_section "All helper files should be valid and have tests"
-"${CUR_DIR}"/test_helper_files.sh
+"${CUR_DIR}/test_helper_files.sh"
 echo_done
 
 new_section "All commands should have valid names"
