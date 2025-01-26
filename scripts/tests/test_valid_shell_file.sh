@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # Usage:
-#   test_valid_shell_file.sh <shell_files>
+#   test_valid_shell_file.sh [<shell_files>]
 
 # Initialize
 # --------------------------------------------------------------------------------------------------
 
-shell_files=$1
+shell_files=${1:-}
 
 CUR_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 CLI_DIR=$(realpath "${CUR_DIR}/../..")
@@ -20,6 +20,10 @@ desired_set="set -euo pipefail"
 
 # Run tests
 # --------------------------------------------------------------------------------------------------
+
+if [ -z "$shell_files" ]; then
+  shell_files=$(get_all_shell_files "$CLI_DIR")
+fi
 
 invalid_files_shebang=''
 invalid_files_set=''

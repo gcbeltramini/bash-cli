@@ -41,7 +41,7 @@ new_section "Shell files should be valid"
 echo_done
 
 new_section "All helper files should be valid and have tests"
-"${CUR_DIR}"/test_helper_files.sh
+"${CUR_DIR}/test_helper_files.sh"
 echo_done
 
 new_section "All commands should have valid names"
@@ -66,6 +66,10 @@ allow_list_regex=".*/tests/resources/commands/problematic file.sh$
 .*/tests/resources/commands/no_newline_at_the_end.txt$"
 invalid_files_lines_at_the_end=$(remove_from_list "$invalid_files_lines_at_the_end" "$allow_list_regex")
 check_if_error "$invalid_files_lines_at_the_end"
+echo_done
+
+new_section "All commands should have a correct documentation"
+"${CUR_DIR}/test_docs.sh"
 echo_done
 
 new_section "Run ShellCheck, a static analysis tool for shell scripts"

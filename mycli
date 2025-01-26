@@ -25,7 +25,7 @@ fi
 source "${CLI_DIR}/core/cli_root/cli_init.sh"
 
 if [[ -n ${1:-} && -n ${2:-} ]]; then
-    # The CLI received 2 arguments (e.g., mycli foo bar)
+    # The CLI received 2 or more arguments (e.g., mycli foo bar ...)
     run_command "$@"
 elif [[ -n ${1:-} && -z ${2:-} ]]; then
     # The CLI received 1 argument (e.g., mycli foo)
