@@ -68,6 +68,10 @@ invalid_files_lines_at_the_end=$(remove_from_list "$invalid_files_lines_at_the_e
 check_if_error "$invalid_files_lines_at_the_end"
 echo_done
 
+new_section "All commands should have a correct documentation"
+"${CUR_DIR}/test_docs.sh"
+echo_done
+
 new_section "Run ShellCheck, a static analysis tool for shell scripts"
 shellcheck "${shell_files_array[@]}" --shell=bash
 echo_done
