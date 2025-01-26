@@ -43,7 +43,7 @@ while IFS= read -r command_file; do
   command=$(echo "$command_file" | awk -F'/' '{print $(NF-1) "/" $NF}' | sed 's/\.sh$//')
   cmd1=$(cut -d'/' -f1 <<<"$command")
   cmd2=$(cut -d'/' -f2 <<<"$command")
-  help=$(mycli "$cmd1" "$cmd2" --help)
+  help=$(./mycli "$cmd1" "$cmd2" --help)
 
   usage_lines=$(_mycli_extract_docopt_section "$help" "usage")
   if [ -z "$usage_lines" ]; then
