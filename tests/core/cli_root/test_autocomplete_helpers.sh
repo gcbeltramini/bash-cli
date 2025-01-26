@@ -8,11 +8,11 @@ set -euo pipefail
 test__mycli_list_commands() {
   local result expected
 
-  result=$(_mycli_list_commands "$TEST_COMMANDS_PATH")
+  result=$(_mycli_list_commands "$TEST_COMMANDS_PATH" | sort)
   expected=$(
     cat <<-EOF
-	update
 	hello
+	update
 	update
 	version
 EOF
