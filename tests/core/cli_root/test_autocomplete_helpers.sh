@@ -295,9 +295,9 @@ test__mycli_get_arg_description() {
 }
 
 test__mycli_get_args_description() {
-  local result expected
+  local result expected args
 
-  local args=$(
+  args=$(
     cat <<-EOF
 	-m
 	--input
