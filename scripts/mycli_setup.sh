@@ -54,7 +54,7 @@ fi
 # --------------------------------------------------------------------------------------------------
 
 show_section "Install the required commands"
-brew install bash coreutils findutils gawk gnu-sed grep jq shellcheck sponge wget
+brew install bash coreutils findutils gawk gnu-sed grep jq shellcheck sponge uv wget
 show_done
 
 # Edit the PATH variable
