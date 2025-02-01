@@ -29,5 +29,9 @@ jobs:
         echo "$modified_files" | sort | head -n 20
         echo "--------------------------------------------------------------------------------"
 
+        echo 'Install uv'
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo 'Done!'
+
         # TODO: Run tests only for modified files
         ./scripts/tests/run_all_tests.sh
