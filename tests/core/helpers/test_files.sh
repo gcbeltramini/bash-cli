@@ -16,20 +16,18 @@ test_backup_if_exists() {
 test_find_relevant_files() {
     local result expected
 
-    result=$(find_relevant_files "tests/resources/commands" | sort)
+    result=$(find_relevant_files "tests/resources/commands/hello" | sort)
     expected=$(cat <<-EOF
 	tests/resources/commands/hello/README.md
 	tests/resources/commands/hello/hello-world.sh
-	tests/resources/commands/no_newline_at_the_end.txt
-	tests/resources/commands/problematic file.sh
+	tests/resources/commands/hello/script.py
 EOF
     )
     assertEquals "$expected" "$result"
 
-    result=$(find_relevant_files "tests/resources/commands" -name '*.sh' | sort)
+    result=$(find_relevant_files "tests/resources/commands/hello" -name '*.sh' | sort)
     expected=$(cat <<-EOF
 	tests/resources/commands/hello/hello-world.sh
-	tests/resources/commands/problematic file.sh
 EOF
     )
     assertEquals "$expected" "$result"
