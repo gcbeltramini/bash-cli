@@ -160,6 +160,33 @@ _mycli_extract_arguments() {
 # Functions for zsh only
 # ==================================================================================================
 
+_mycli_list_commands_and_description() {
+  # List all commands and their descriptions available in the CLI.
+  #
+  # Usage:
+  #   _mycli_list_commands_and_description <commands_dir>
+  #
+  # Examples:
+  #   _mycli_list_commands_and_description "$MYCLI_HOME/commands" # --> "hello:Say hello\nupdate:Update mycli\nversion:Show mycli version"
+  local -r commands_dir=$1
+
+  find "$commands_dir" \
+    -maxdepth 1 \
+    -mindepth 1 \
+    -type d \
+    -exec basename {} \; | while read -r command; do
+    if [[ -s "$commands_dir/$command/README.md" ]]; then
+      # first non-empty line not starting with "#" in the README file
+      description=$(grep -m 1 -vE '^#|^[[:space:]]*$' "$commands_dir/$command/README.md")
+    else
+      description="<no description>"
+    fi
+    echo "$command:$description"
+  done
+  echo "update:Update mycli"
+  echo "version:Show mycli version"
+}
+
 _mycli_list_subcommands_and_description() {
   # List all subcommands and their descriptions available in the CLI.
   #

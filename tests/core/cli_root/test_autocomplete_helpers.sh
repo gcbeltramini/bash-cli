@@ -11,6 +11,7 @@ test__mycli_list_commands() {
   result=$(_mycli_list_commands "$TEST_COMMANDS_PATH" | sort)
   expected=$(
     cat <<-EOF
+	foo
 	hello
 	update
 	update
@@ -87,7 +88,8 @@ EOF
 test__mycli_extract_parameters() {
   local result expected usage
 
-  usage=$(cat <<-EOF
+  usage=$(
+    cat <<-EOF
 	foo bar baz -q --v --qwe=1 --qwe-rty <some-param> -- [--some-param=<x> --my-flag]
 	-f FILE  File name
 	--some_param=FILE_NAME  Some parameter
@@ -193,6 +195,25 @@ EOF
 # ==================================================================================================
 # Functions for zsh only
 # ==================================================================================================
+
+test__mycli_list_commands_and_description() {
+  local result expected
+
+  result=$(
+    _mycli_list_commands_and_description "$TEST_COMMANDS_PATH" |
+      sort |
+      sed 's/^update:<no description>$// ; /^ *$/d' # remove the "update" command, because the folder exists for other unit tests
+  )
+  expected=$(
+    cat <<-EOF
+	foo:<no description>
+	hello:Commands used to test the CLI in the test folder
+	update:Update mycli
+	version:Show mycli version
+EOF
+  )
+  assertEquals "$expected" "$result"
+}
 
 test__mycli_list_subcommands_and_description() {
   local result expected

@@ -49,6 +49,7 @@ find_relevant_files() {
         -not -name '*.tfstate.backup' \
         -not -name '*.coverage' \
         -not -path '*/.git/*' \
+        -not -name '.gitkeep' \
         -not -path '*/.idea/*' \
         -not -path '*/.terraform/*' \
         "${find_args[@]}" #\
