@@ -22,11 +22,13 @@ _mycli_completions() {
   if ((CURRENT == 2)); then
     # Define possible completions for <cmd1>
 
-    # shellcheck disable=SC2034,SC2207
-    local -ra cmds1=($(_mycli_list_commands "$commands_dir"))
+    local -r cmds_descriptions=$(_mycli_list_commands_and_description "$commands_dir")
+
+    # Convert the multiline string to an array
+    local -ra cmds_descriptions_array=("${(f)cmds_descriptions}")
     # shellcheck disable=SC2207
     # compadd -X "Available commands:" -a cmds1
-    _describe 'mycli commands' cmds1
+    _describe 'mycli commands' cmds_descriptions_array
     return 0
 
   # Case 2: The user is completing <cmd2> (the second argument)
@@ -61,9 +63,14 @@ _mycli_completions() {
       return 0
     fi
 
+    local -r args_parameters=$(echo "$args_with_description" | grep '^-')
+    local -r args_actions=$(echo "$args_with_description" | grep -v '^-')
+
     # Convert the multiline string to an array
-    local -ra args_with_description_array=("${(f)args_with_description}")
-    _describe 'mycli parameters' args_with_description_array
+    local -ra args_parameters_array=("${(f)args_parameters}")
+    local -ra args_actions_array=("${(f)args_actions}")
+    _describe -t params 'mycli parameters' args_parameters_array
+    _describe -t actions 'mycli actions' args_actions_array
     return 0
   fi
 }

@@ -18,10 +18,10 @@ test_find_relevant_files() {
 
     result=$(find_relevant_files "tests/resources/commands" | sort)
     expected=$(cat <<-EOF
+	tests/resources/commands/hello/README.md
 	tests/resources/commands/hello/hello-world.sh
 	tests/resources/commands/no_newline_at_the_end.txt
 	tests/resources/commands/problematic file.sh
-	tests/resources/commands/update/.gitkeep
 EOF
     )
     assertEquals "$expected" "$result"
