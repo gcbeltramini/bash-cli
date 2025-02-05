@@ -6,4 +6,4 @@ set -euo pipefail
 echo
 echo "Last modification in mycli"
 echo "--------------------------"
-git -C "$CLI_DIR" show --summary
+git -C "$CLI_DIR" --no-pager show --summary
