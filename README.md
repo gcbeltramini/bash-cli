@@ -64,6 +64,28 @@ This command will:
   - Enable autocomplete for the CLI
 - Make the required scripts executable
 
+If you want to make your zsh terminal look better when autocompleting commands, add this to the end
+of the file `~/.zshrc` (note that this affects the autocompletion of all commands in the terminal):
+
+```shell
+# format all messages not formatted in bold prefixed with ----
+zstyle ':completion:*' format '%B---- %d%b'
+# format descriptions (notice the vt100 escapes)
+zstyle ':completion:*:*:*:*:descriptions' format $'%{\e[0;31m%}completing %B%d%b%{\e[0m%}'
+# bold and underline normal messages
+zstyle ':completion:*:*:*:*:messages' format '%B%U---- %d%u%b'
+# format in bold red error messages
+zstyle ':completion:*:*:*:*:warnings' format "%B$fg[red]%}---- no match for: $fg[white]%d%b"
+# use the tag name as group name
+zstyle ':completion:*' group-name ''
+# activate menu selection
+zstyle ':completion:*' menu select
+# avoid hiding descriptions, enable verbose descriptions
+zstyle ':completion:*' verbose yes
+```
+
+Source: <https://www.masterzen.fr/2009/04/19/in-love-with-zsh-part-one/#formatting-completion>
+
 ### Update
 
 To update `mycli`, you simply need to update the folder `bash-cli`. There are basically 3 ways:
