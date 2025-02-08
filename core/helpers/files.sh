@@ -108,7 +108,7 @@ find_dirs_with_only_hidden_files() {
     #   find_dirs_with_only_hidden_files <path>
     local -r path=$1
 
-    find "$path" -type d -exec sh -c '
+    find "$path" -type d -exec bash -c '
         files=$(ls -A "$1" 2>/dev/null)
         if [[ -n "$files" ]]; then
             hidden_files=$(ls -A "$1" 2>/dev/null | grep "^\.")
