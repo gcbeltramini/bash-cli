@@ -2,80 +2,96 @@
 set -euo pipefail
 
 test_backup_if_exists() {
-    local -r file_that_doesnt_exist='i-dont-exist.txt'
-    backup_if_exists "$file_that_doesnt_exist"
-    assertFalse "[ -f $file_that_doesnt_exist ]"
+  local -r file_that_doesnt_exist='i-dont-exist.txt'
+  backup_if_exists "$file_that_doesnt_exist"
+  assertFalse "[ -f $file_that_doesnt_exist ]"
 
-    assertTrue "[ -f $mock_file ]"
-    assertFalse "[ -f ${mock_file}.20*.bkp ]"
-    backup_if_exists "$mock_file" >/dev/null 2>&1
-    assertTrue "[ -f $mock_file ]"
-    assertTrue "[ -f ${mock_file}.20*.bkp ]"
+  assertTrue "[ -f $mock_file ]"
+  assertFalse "[ -f ${mock_file}.20*.bkp ]"
+  backup_if_exists "$mock_file" >/dev/null 2>&1
+  assertTrue "[ -f $mock_file ]"
+  assertTrue "[ -f ${mock_file}.20*.bkp ]"
 }
 
 test_find_relevant_files() {
-    local result expected
+  local result expected
 
-    result=$(find_relevant_files "tests/resources/commands/hello" | sort)
-    expected=$(cat <<-EOF
+  result=$(find_relevant_files "tests/resources/commands/hello" | sort)
+  expected=$(
+    cat <<-EOF
 	tests/resources/commands/hello/README.md
 	tests/resources/commands/hello/hello-world.sh
 	tests/resources/commands/hello/script.py
 EOF
-    )
-    assertEquals "$expected" "$result"
+  )
+  assertEquals "$expected" "$result"
 
-    result=$(find_relevant_files "tests/resources/commands/hello" -name '*.sh' | sort)
-    expected=$(cat <<-EOF
+  result=$(find_relevant_files "tests/resources/commands/hello" -name '*.sh' | sort)
+  expected=$(
+    cat <<-EOF
 	tests/resources/commands/hello/hello-world.sh
 EOF
-    )
-    assertEquals "$expected" "$result"
+  )
+  assertEquals "$expected" "$result"
 }
 
 test_files_not_ending_with_newline() {
-    local result expected
+  local result expected
 
-    result=$(files_not_ending_with_newline "$(find_relevant_files "tests/resources/commands")" | sort)
-    expected="tests/resources/commands/no_newline_at_the_end.txt"
-    assertEquals "$expected" "$result"
+  result=$(files_not_ending_with_newline "$(find_relevant_files "tests/resources/commands")" | sort)
+  expected="tests/resources/commands/no_newline_at_the_end.txt"
+  assertEquals "$expected" "$result"
 
-    files=$(cat <<-EOF
+  files=$(
+    cat <<-EOF
 	tests/resources/commands/no_newline_at_the_end.txt
 	tests/resources/commands/problematic file.sh
 EOF
-    )
-    result=$(files_not_ending_with_newline "$files")
-    expected="tests/resources/commands/no_newline_at_the_end.txt"
-    assertEquals "$expected" "$result"
+  )
+  result=$(files_not_ending_with_newline "$files")
+  expected="tests/resources/commands/no_newline_at_the_end.txt"
+  assertEquals "$expected" "$result"
 }
 
 test_has_exactly_one_line_at_the_end() {
-    local result
-    assertTrue 'has_exactly_one_line_at_the_end "tests/resources/commands/hello/hello-world.sh"'
+  local result
+  assertTrue 'has_exactly_one_line_at_the_end "tests/resources/commands/hello/hello-world.sh"'
 
-    assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"'
+  assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"'
 
-    has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"
-    result=$?
-    assertEquals 2 "$result"
+  has_exactly_one_line_at_the_end "tests/resources/commands/problematic file.sh"
+  result=$?
+  assertEquals 2 "$result"
 
-    assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/no_newline_at_the_end.txt"'
+  assertFalse 'has_exactly_one_line_at_the_end "tests/resources/commands/no_newline_at_the_end.txt"'
 
-    has_exactly_one_line_at_the_end "tests/resources/commands/no_newline_at_the_end.txt"
-    result=$?
-    assertEquals 1 "$result"
+  has_exactly_one_line_at_the_end "tests/resources/commands/no_newline_at_the_end.txt"
+  result=$?
+  assertEquals 1 "$result"
+}
+
+test_find_dirs_with_only_hidden_files() {
+  local result expected
+
+  result=$(find_dirs_with_only_hidden_files "tests/resources/commands" | sort)
+  expected=$(
+    cat <<-EOF
+	tests/resources/commands/foo
+	tests/resources/commands/update
+EOF
+  )
+  assertEquals "$expected" "$result"
 }
 
 oneTimeSetUp() {
-    mock_file="mock_file.txt"
-    touch "$mock_file"
-    . core/helpers/files.sh
+  mock_file="mock_file.txt"
+  touch "$mock_file"
+  . core/helpers/files.sh
 }
 
 oneTimeTearDown() {
-    rm -f "$mock_file"
-    rm -f "${mock_file}.20"*".bkp"
+  rm -f "$mock_file"
+  rm -f "${mock_file}.20"*".bkp"
 }
 
 . scripts/shunit2

@@ -17,6 +17,9 @@ backup_if_exists() {
     fi
 }
 
+# Files
+# ------------------------------------------------------------------------------
+
 find_relevant_files() {
     # List relevant files.
     #
@@ -93,4 +96,25 @@ has_exactly_one_line_at_the_end() {
     else
         return 0
     fi
+}
+
+# Directories
+# ------------------------------------------------------------------------------
+
+find_dirs_with_only_hidden_files() {
+    # Find directories that contain only hidden files and directories.
+    #
+    # Usage:
+    #   find_dirs_with_only_hidden_files <path>
+    local -r path=$1
+
+    find "$path" -type d -exec sh -c '
+        files=$(ls -A "$1" 2>/dev/null)
+        if [[ -n "$files" ]]; then
+            hidden_files=$(ls -A "$1" 2>/dev/null | grep "^\.")
+            if [[ "$files" == "$hidden_files" ]]; then
+                echo "$1"
+            fi
+        fi
+    ' _ {} \;
 }
