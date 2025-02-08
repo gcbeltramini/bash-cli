@@ -8,7 +8,7 @@ set -euo pipefail
 ##?
 ##? Options:
 ##?   --miniforge-version=VERSION  Miniforge version from https://github.com/conda-forge/miniforge/releases/ [default: latest]
-##?   --no-update                  Do not update packages with conda
+##?   --no-update                  Do not update packages with conda and do not install Python packages.
 ##?
 ##? Examples:
 ##?   python setup --miniforge-version=24.3.0-0
@@ -21,19 +21,19 @@ declare miniforge_version no_update
 color="blue"
 
 if is_mac; then
-    os="MacOSX"
+  os="MacOSX"
 else
-    os="Linux"
+  os="Linux"
 fi
 
 arch="$(uname -m)"
 
 if [[ $miniforge_version == "latest" ]]; then
-    miniforge_fname="Miniforge3-${os}-${arch}.sh"
-    source_url="https://github.com/conda-forge/miniforge/releases/latest/download/${miniforge_fname}"
+  miniforge_fname="Miniforge3-${os}-${arch}.sh"
+  source_url="https://github.com/conda-forge/miniforge/releases/latest/download/${miniforge_fname}"
 else
-    miniforge_fname="Miniforge3-${miniforge_version}-${os}-${arch}.sh"
-    source_url="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/${miniforge_fname}"
+  miniforge_fname="Miniforge3-${miniforge_version}-${os}-${arch}.sh"
+  source_url="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/${miniforge_fname}"
 fi
 
 destination_dir="${HOME}/Downloads"
@@ -41,9 +41,9 @@ local_file="${destination_dir}/${miniforge_fname}"
 
 new_section_with_color "$color" "Download '$miniforge_fname' into '$destination_dir'"
 if [[ ! -f $local_file ]]; then
-    wget -P "$destination_dir" "$source_url"
+  wget -P "$destination_dir" "$source_url"
 else
-    echo "File '$local_file' already exists."
+  echo "File '$local_file' already exists."
 fi
 echo_done
 
@@ -55,8 +55,31 @@ new_section_with_color "$color" "Run init command"
 "${HOME}/miniforge3/condabin/conda" init zsh
 echo_done
 
+new_section_with_color "$color" "Add 'ipykernel' to default packages"
+"${HOME}/miniforge3/condabin/conda" config --add create_default_packages ipykernel
+echo_done
+
 if ! $no_update; then
-    new_section_with_color "$color" "Update packages"
-    "${HOME}/miniforge3/condabin/conda" update -yn base --all
-    echo_done
+  new_section_with_color "$color" "Update packages"
+  "${HOME}/miniforge3/condabin/conda" update -yn base conda
+  "${HOME}/miniforge3/condabin/conda" update -yn base --all
+  echo_done
+
+  new_section_with_color "$color" "Install Python packages"
+  "${HOME}/miniforge3/condabin/conda" install -yn base \
+    boto3 \
+    jupyter \
+    jupyterlab \
+    jupyterlab_execute_time \
+    matplotlib \
+    nb_conda_kernels \
+    notebook \
+    pandas \
+    pip \
+    pytest \
+    pytest-xdist \
+    seaborn \
+    tabulate \
+    toolz
+  echo_done
 fi
