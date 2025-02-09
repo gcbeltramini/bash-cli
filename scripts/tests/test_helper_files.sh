@@ -57,3 +57,6 @@ invalid_variable_def_or_fn_call=$(remove_from_list "$invalid_variable_def_or_fn_
 check_if_error \
     "$invalid_variable_def_or_fn_call" \
     "Lines defining variables or calling functions:"
+
+echo
+echo_done

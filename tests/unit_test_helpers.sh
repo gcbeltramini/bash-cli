@@ -18,6 +18,14 @@ new_section_level_2() {
 # Messages
 # --------------------------------------------------------------------------------------------------
 
+echo_done() {
+    # Show done message.
+    #
+    # Usage:
+    #   echo_done
+    echo >&2 -e '\033[32mDone!\033[0m'
+}
+
 echo_error() {
     # Show error message.
     #

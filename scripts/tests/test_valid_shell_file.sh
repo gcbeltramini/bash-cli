@@ -25,6 +25,9 @@ if [ -z "$shell_files" ]; then
   shell_files=$(get_all_shell_files "$CLI_DIR")
 fi
 
+# For debugging:
+# echo >&2 -e "[DEBUG] Shell files:\n'$shell_files'"
+
 invalid_files_shebang=''
 invalid_files_set=''
 invalid_files_shellcheck=''
@@ -67,3 +70,6 @@ allow_list_regex=".*/tests/helpers.sh$
 invalid_files_executable=$(find_not_executable "$CLI_DIR")
 invalid_files_executable=$(remove_from_list "$invalid_files_executable" "$allow_list_regex")
 check_if_error "$invalid_files_executable"
+
+echo
+echo_done

@@ -166,11 +166,19 @@ For more details on code organization and content, check these files:
 ### Run tests locally
 
 1. Run all tests: `make test`
+   1. This is the same as `make test type=all`
 2. Run specific tests:
    1. To run [ShellCheck](https://github.com/koalaman/shellcheck) (a static analysis tool for shell
    scripts): `shellcheck --shell=bash /path/to/shell/file.sh`
    2. To run unit tests with [shUnit2](https://github.com/kward/shunit2) (a unit test framework for
-   bash scripts), run a test file from the [tests](tests) folder. For example: `tests/core/helpers/test_echo.sh`
+   bash scripts), run a test script from the [tests](tests) folder. For example: `tests/core/helpers/test_echo.sh`
+   3. `make test type=docs`: run the tests for the documentation
+   4. `make test type=helpers`: run the tests for all helper files
+   5. `make test type=python`: run Python tests
+   6. `make test type=shell-linter`: run `shellcheck` for all shell files
+   7. `make test type=shell-unit`: run unit tests for all shell files
+   8. `make test type=valid-file`: validate all files
+   9. `make test type=valid-shell-file`: validate all shell files
 
 ## Troubleshoot
 
