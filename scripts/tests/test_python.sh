@@ -24,6 +24,9 @@ if [ -z "$python_scripts" ]; then
   # function in file `tests/unit_test_helpers.sh`.
 fi
 
+# For debugging:
+# echo >&2 -e "[DEBUG] Python scripts:\n'$python_scripts'"
+
 new_section_level_2 "All Python scripts should have metadata (PEP 723)"
 # https://packaging.python.org/en/latest/specifications/inline-script-metadata/
 # Only scripts called after the pattern `^[^#]*run_python_script ` should be verified, but it may not
@@ -42,7 +45,7 @@ check_if_error "$invalid_files_metadata"
 
 new_section_level_2 "Run unit tests for Python scripts with pytest"
 if command -v uv >/dev/null; then
-  uv run --with 'pytest>=8,<9' -- python3 -m pytest tests/python
+  uv run --with 'pytest>=8,<9' -- python3 -m pytest "$CLI_DIR/tests/python"
 else
   venv_name=".venv_pytest"
   python3 -m venv "$venv_name"
@@ -52,5 +55,8 @@ else
   python3 -m pip install 'pytest>=8,<9'
   echo
   echo 'Running tests...'
-  python3 -m pytest tests/python
+  python3 -m pytest "$CLI_DIR/tests/python"
 fi
+
+echo
+echo_done
