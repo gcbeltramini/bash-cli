@@ -183,7 +183,6 @@ debug_var_in_file() {
     # shellcheck disable=SC2001
     local -r bash_source_short=$(echo "${filename}" | sed "s:^${parent_dir}/::")
 
-
     echo_color >&2 "$color" "$(surround_text " Debug variables (${bash_source_short}:${line_number}) " $n_chars ">")"
     for var in $var_names; do
         if ! is_set "$var"; then

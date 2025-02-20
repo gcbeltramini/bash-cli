@@ -8,7 +8,7 @@ set -euo pipefail
 ##?
 ##? Options:
 ##?   <path>  Path to the directory to search in [default: .]
-##?   -a      Return also folders that contain only hidden files and folders (names begin with a dot)
+##?   -a      Return also folders that contain only hidden files and folders (names beginning with a dot)
 
 source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
@@ -22,15 +22,7 @@ find "$path" -type d -empty
 
 if $a; then
   echo_color >&2 "$msg_color" "Directories in '$path' that contain only hidden files and directories:"
-  find "$path" -type d -exec sh -c '
-    files=$(ls -A "$1" 2>/dev/null)
-    if [[ -n "$files" ]]; then
-      hidden_files=$(ls -A "$1" 2>/dev/null | grep "^\.")
-      if [[ "$files" == "$hidden_files" ]]; then
-        echo "$1"
-      fi
-    fi
-  ' _ {} \;
+  find_dirs_with_only_hidden_files "$path"
 fi
 
 echo_done
