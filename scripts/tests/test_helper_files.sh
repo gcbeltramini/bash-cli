@@ -37,12 +37,12 @@ helper_functions=$(grep -rE '^[^ #]+() {' "$HELPERS_DIR")
 test_helper_functions=$(grep -r '^test_[a-zA-Z0-9_]*' "$TESTS_HELPERS_DIR" | sed 's:tests/::g ; s:test_::g')
 functions_without_test=$(
     comm -23 \
-        <(echo "$helper_functions" | sort) \
-        <(echo "$test_helper_functions" | sort)
+        <(echo "$helper_functions" | sort -t: -k1,1 --stable) \
+        <(echo "$test_helper_functions" | sort -t: -k1,1 --stable)
 )
 check_if_error \
     "$functions_without_test" \
-    "Functions without test in '$TESTS_HELPERS_DIR':"
+    "Functions without test or with test in the wrong order in '$TESTS_HELPERS_DIR':"
 
 new_section_level_2 "Every helper file should only define functions..."
 invalid_variable_def_or_fn_call=''
