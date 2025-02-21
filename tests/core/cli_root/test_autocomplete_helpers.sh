@@ -416,10 +416,11 @@ EOF
   DOCOPT_OPTIONS=$(
     cat <<-EOF
 	command-x     Some X command
-  command_y     Some Y command
+	command_y     Some Y command
 	-h --help     Show this screen.
 	--version     Show version.
 	--my-param=<x>  Some parameter [default: 123]
+	                And a description in the second line
 	--coefficient=K  The K coefficient [default: 2.95]
 	--another-param
 	-f FILE  File name

@@ -215,11 +215,12 @@ _mycli_list_subcommands_and_description() {
 _mycli_extract_parameter_names() {
   # Remove the description of a parameter from the docopt options.
   #
-  # 1. Remove leading spaces
+  # 1. Remove leading spaces (up to 5; more than that is considered part of the description)
   # 2. Remove everything after the first two spaces and content inside "<>"
   # 3. Replace "=" and "," with spaces
   # 4. Remove trailing words starting with uppercase letters
   # 5. Remove trailing spaces
+  # 6. Remove empty lines
   #
   # Usage:
   #   _mycli_extract_parameter_names <docopt_options>
@@ -228,12 +229,14 @@ _mycli_extract_parameter_names() {
   #   _mycli_extract_parameter_names "$docopt_options" # --> "--foo\n--help\n--some-flag"
   local -r docopt_options=$1
 
+  # The number of spaces limited to 5 must be consistent with function `_mycli_get_arg_description`
   echo "$docopt_options" | sed -E '
-    s/^[[:space:]]*// ;
+    s/^[[:space:]]{0,5}// ;
     s/ {2,}.*// ; s/<[^>]+>//g ;
     s/[=,]/ /g ;
     s/[[:space:]]+[A-Z][^ ]*//g ;
-    s/[[:space:]]+$//g
+    s/[[:space:]]+$//g ;
+    /^[[:space:]]*$/d
   '
 }
 
@@ -250,8 +253,12 @@ _mycli_get_arg_description() {
   local -r parameter_names_in_options=$3
   local line_number
 
+  # Remove lines with more than 5 leading spaces (description lines). This must be consistent with
+  # the function `_mycli_extract_parameter_names`.
+  local -r docopt_options_first_lines=$(sed -E '/^[[:space:]]{6,}/d' <<<"$docopt_options")
+
   if line_number=$(grep -nE -- "(^| )$arg( |$)" <<<"$parameter_names_in_options" | cut -d: -f1); then
-    sed -n "${line_number}p" <<<"$docopt_options" |
+    sed -n "${line_number}p" <<<"$docopt_options_first_lines" |
       sed 's/^[[:space:]]*//' |
       grep -Eo ' {2,}.*' |
       sed 's/^[[:space:]]*//' || :

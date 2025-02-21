@@ -56,6 +56,8 @@ else
   echo
   echo 'Running tests...'
   python3 -m pytest "$CLI_DIR/tests/python"
+  deactivate
+  rm -rf "$venv_name"
 fi
 
 echo
