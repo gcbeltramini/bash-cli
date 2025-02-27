@@ -24,20 +24,20 @@ declare my_param some_flag many my_cmd pos1 pos2 cmd1 cmd2
 declare -a names
 
 if [[ -n "$positional_param" ]]; then
-    echo "--my-param='$my_param'"
-    echo "--some-flag='$some_flag'"
+  echo "--my-param='$my_param'"
+  echo "--some-flag='$some_flag'"
 elif "$many"; then
-    index=0
-    for name in "${names[@]}"; do
-        echo "name ${index} = '$name'"
-        index=$((index + 1))
-    done
+  index=0
+  for name in "${names[@]}"; do
+    echo "name ${index} = '$name'"
+    index=$((index + 1))
+  done
 elif "$my_cmd"; then
-    echo "pos1='$pos1'"
-    echo "pos2='$pos2'"
+  echo "pos1='$pos1'"
+  echo "pos2='$pos2'"
 elif $cmd1 || $cmd2; then
-    echo "cmd1='$cmd1'"
-    echo "cmd2='$cmd2'"
-    echo "pos1='$pos1'"
-    echo "pos2='$pos2'"
+  echo "cmd1='$cmd1'"
+  echo "cmd2='$cmd2'"
+  echo "pos1='$pos1'"
+  echo "pos2='$pos2'"
 fi
