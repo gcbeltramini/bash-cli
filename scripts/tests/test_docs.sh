@@ -57,6 +57,12 @@ if $test_all_commands; then
   fi
 fi
 
+if commands_no_description=$(grep ':<no description>$' <<<"$commands_description"); then
+  echo_error "Some commands do not have a description. Add a description to the following files:"
+  echo "$commands_no_description" | cut -d':' -f1 | sort | sed -E 's:(.*):commands/\1/README.md:'
+  exit 1
+fi
+
 if long_lines=$(grep -E '^.{151,}' <<<"$commands_description"); then
   echo_error "The length of the command name + description must be less than 150 characters. Violations:"
   echo "$long_lines" | sort
