@@ -32,14 +32,14 @@ check_if_error "$invalid_cmds" "Invalid folders and files:"
 new_section_level_2 "All files should have exactly one empty line at the end"
 invalid_files_lines_at_the_end=''
 while IFS= read -r file; do
-    if [[ ! -s "$file" ]]; then
-        # File does not exist or is empty
-        continue
-    fi
+  if [[ ! -s "$file" ]]; then
+    # File does not exist or is empty
+    continue
+  fi
 
-    if ! has_exactly_one_line_at_the_end "$file"; then
-        invalid_files_lines_at_the_end+="\n$file"
-    fi
+  if ! has_exactly_one_line_at_the_end "$file"; then
+    invalid_files_lines_at_the_end+="\n$file"
+  fi
 done <<<"$files"
 allow_list_regex=".*/tests/resources/commands/problematic file.sh$
 .*/tests/resources/commands/no_newline_at_the_end.txt$"

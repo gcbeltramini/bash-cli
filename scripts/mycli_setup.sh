@@ -7,47 +7,47 @@ set -euo pipefail
 # --------------------------------------------------------------------------------------------------
 
 echo_color() {
-    local -r color=$1
-    local -r text=$2
-    local -r no_color='\x1b[0m'
-    echo -e "${color}${text}${no_color}"
+  local -r color=$1
+  local -r text=$2
+  local -r no_color='\x1b[0m'
+  echo -e "${color}${text}${no_color}"
 }
 
 show_section() {
-    local -r section=$1
-    local -r separator='----------------------------------------------------------------------------------------------------'
-    echo
-    echo "$separator"
-    echo "$section"
-    echo "$separator"
+  local -r section=$1
+  local -r separator='----------------------------------------------------------------------------------------------------'
+  echo
+  echo "$separator"
+  echo "$section"
+  echo "$separator"
 }
 
 show_done() {
-    echo_color "\x1b[32m" 'Done!'
+  echo_color "\x1b[32m" 'Done!'
 }
 
 get_cli_dir() {
-    # Get the directory of the CLI repository. It is assumed that this script is in the 'scripts' directory.
-    local -r curr_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-    dirname "$curr_dir"
+  # Get the directory of the CLI repository. It is assumed that this script is in the 'scripts' directory.
+  local -r curr_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+  dirname "$curr_dir"
 }
 
 make_executable() {
-    local -r parent_dir=$1
-    find \
-        "${parent_dir}/commands" "${parent_dir}/tests" \
-        -type f \
-        -name '*.sh' \
-        -exec chmod +x {} \;
+  local -r parent_dir=$1
+  find \
+    "${parent_dir}/commands" "${parent_dir}/tests" \
+    -type f \
+    -name '*.sh' \
+    -exec chmod +x {} \;
 }
 
 # Install Homebrew
 # --------------------------------------------------------------------------------------------------
 
 if ! command -v brew >/dev/null; then
-    show_section "Install Homebrew"
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    show_done
+  show_section "Install Homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  show_done
 fi
 
 # Install commands with Homebrew
@@ -62,46 +62,46 @@ show_done
 
 show_section "Add the CLI to the 'PATH' variable"
 shell_files=(
-    "${HOME}/.bash_profile"
-    "${HOME}/.zshrc"
+  "${HOME}/.bash_profile"
+  "${HOME}/.zshrc"
 )
 start_pattern="# >>> mycli >>>"
 end_pattern="# <<< mycli <<<"
 cli_dir=$(get_cli_dir)
 parent_dir=$(dirname "$cli_dir")
 for shell_file in "${shell_files[@]}"; do
-    if [[ -f $shell_file ]]; then
-        timestamp=$(date +"%Y%m%d%H%M%S")
-        backup_path="${shell_file}.${timestamp}.bkp"
-        cp "$shell_file" "$backup_path"
-        echo "'$shell_file' already exists. Backup created: '$backup_path'"
-    fi
+  if [[ -f $shell_file ]]; then
+    timestamp=$(date +"%Y%m%d%H%M%S")
+    backup_path="${shell_file}.${timestamp}.bkp"
+    cp "$shell_file" "$backup_path"
+    echo "'$shell_file' already exists. Backup created: '$backup_path'"
+  fi
 
-    echo -n "Removing multiple empty lines and the section between '$start_pattern' and '$end_pattern' in file '$shell_file'... "
-    sed -e "/^[[:space:]]*$/N;/^\n[[:space:]]*$/D" -e "/^[[:space:]]*$start_pattern/,/$end_pattern/d" "$shell_file" | sponge "$shell_file"
-    show_done
+  echo -n "Removing multiple empty lines and the section between '$start_pattern' and '$end_pattern' in file '$shell_file'... "
+  sed -e "/^[[:space:]]*$/N;/^\n[[:space:]]*$/D" -e "/^[[:space:]]*$start_pattern/,/$end_pattern/d" "$shell_file" | sponge "$shell_file"
+  show_done
 
-    if [[ $shell_file == *".bash_profile" ]]; then
-        completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.bash"
-    elif [[ $shell_file == *".zshrc" ]]; then
-        completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.zsh"
-    else
-        echo "Shell file '$shell_file' not recognized. Skipping..."
-        continue
-    fi
+  if [[ $shell_file == *".bash_profile" ]]; then
+    completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.bash"
+  elif [[ $shell_file == *".zshrc" ]]; then
+    completion_filename="\$MYCLI_HOME/core/cli_root/autocomplete.zsh"
+  else
+    echo "Shell file '$shell_file' not recognized. Skipping..."
+    continue
+  fi
 
-    echo -n "Appending the CLI configuration to '$shell_file'... "
-    # shellcheck disable=SC2016
-    # You can add here custom functions, aliases, environment variables.
-    to_add="
+  echo -n "Appending the CLI configuration to '$shell_file'... "
+  # shellcheck disable=SC2016
+  # You can add here custom functions, aliases, environment variables.
+  to_add="
 
 $start_pattern
 export MYCLI_HOME=\"$cli_dir\"
 [ -f \"$completion_filename\" ] && source \"$completion_filename\""'
 export PATH="${MYCLI_HOME}:${PATH}"
 '"$end_pattern"
-    echo "$to_add" >>"$shell_file"
-    show_done
+  echo "$to_add" >>"$shell_file"
+  show_done
 done
 
 # Make scripts executable
