@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     name: str = args.name
     foo: str = args.foo
-    some_flag: bool = True if args.some_flag == "true" else False
+    some_flag: bool = args.some_flag == "true"
 
     print("Hello from the Python script!")
     print()
