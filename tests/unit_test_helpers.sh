@@ -19,6 +19,7 @@ new_section_level_2() {
 # --------------------------------------------------------------------------------------------------
 
 echo_done() {
+    # COPIED FROM core/helpers/echo.sh TO AVOID SOURCING EXTERNAL FILES.
     # Show done message.
     #
     # Usage:
@@ -27,12 +28,16 @@ echo_done() {
 }
 
 echo_error() {
+    # COPIED FROM core/helpers/echo.sh TO AVOID SOURCING EXTERNAL FILES.
     # Show error message.
     #
     # Usage:
     #   echo_error <message>
-    local -r message=$1
-    echo >&2 -e "\033[31m[ERROR]\033[0m ${message}"
+    #
+    # Examples:
+    #   echo_error "Your command failed."
+    local -r text=$1
+    echo >&2 -e "\033[31m[ERROR] ${text}\033[0m"
 }
 
 get_test_running_message() {

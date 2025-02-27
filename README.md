@@ -25,10 +25,11 @@ your command name.
 
 ## Why bash?
 
-`bash` was chosen because it requires almost no setup, has a good ecosystem of commands, is good for
-text processing (with tools like `grep`, `sed`, `awk`, `cut`), allows quick prototyping (e.g., copy
-commands directly from the terminal), is portable across platforms (operating system and computer
-architecture), allows calling commands in other programming languages.
+`bash` was chosen because it requires almost no setup, doesn't require building or the creation of
+an environment, has a good ecosystem of commands, is good for text processing (with tools like `grep`,
+`sed`, `awk`, `cut`), allows quick prototyping (e.g., copy commands directly from the terminal), is
+portable across platforms (operating system and computer architecture), allows calling commands in
+other programming languages.
 
 The cons are that `bash` is not a very popular or beloved language, the readability may not be good
 specially when using complex programming logic, error handling is weak (e.g., the script may
