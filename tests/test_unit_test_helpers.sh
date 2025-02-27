@@ -37,7 +37,7 @@ test_check_if_error() {
 
     result=$(check_if_error "/path/to/cli/command/file1\n/path/to/cli/file2" 2>&1)
     expected=$(cat <<-EOF
-	\033[31m[ERROR]\033[0m Invalid files:
+	\033[31m[ERROR] Invalid files:\033[0m
 	command/file1
 	file2
 EOF
@@ -46,7 +46,7 @@ EOF
 
     result=$(check_if_error "/another/path/file1\nfile2" "Error message:" 2>&1)
     expected=$(cat <<-EOF
-	\033[31m[ERROR]\033[0m Error message:
+	\033[31m[ERROR] Error message:\033[0m
 	/another/path/file1
 	file2
 EOF
