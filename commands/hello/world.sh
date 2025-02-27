@@ -25,9 +25,9 @@ declare foo hello_name name some_flag
 declare -a ls_args
 
 if [ -n "$name" ]; then
-    hello_name=", $name"
+  hello_name=", $name"
 else
-    hello_name=""
+  hello_name=""
 fi
 
 echo_color "green" "Hello from the CLI${hello_name} :)"
@@ -35,8 +35,8 @@ echo "The flag '--some-flag' is '${some_flag}'"
 echo "The named parameter '--foo' is '${foo}'"
 
 if [ ${#ls_args[@]} -gt 0 ]; then
-    echo "Running 'ls' with the following arguments: ${ls_args[*]}"
-    ls "${ls_args[@]}"
+  echo "Running 'ls' with the following arguments: ${ls_args[*]}"
+  ls "${ls_args[@]}"
 fi
 
 echo_color "green" "If you can see this green message, it means that the CLI is working on your machine."

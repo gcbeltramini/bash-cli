@@ -33,22 +33,22 @@ invalid_files_set=''
 invalid_files_shellcheck=''
 
 while IFS= read -r file; do
-    if [[ ! -s "$file" ]]; then
-        # File does not exist or is empty
-        continue
-    fi
+  if [[ ! -s "$file" ]]; then
+    # File does not exist or is empty
+    continue
+  fi
 
-    if has_invalid_shebang "$desired_shebang" "$file"; then
-        invalid_files_shebang+="\n$file"
-    fi
+  if has_invalid_shebang "$desired_shebang" "$file"; then
+    invalid_files_shebang+="\n$file"
+  fi
 
-    if has_invalid_set "$desired_set" "$file"; then
-        invalid_files_set+="\n$file"
-    fi
+  if has_invalid_set "$desired_set" "$file"; then
+    invalid_files_set+="\n$file"
+  fi
 
-    if has_shellcheck_all_disabled "$file"; then
-        invalid_files_shellcheck+="\n$file"
-    fi
+  if has_shellcheck_all_disabled "$file"; then
+    invalid_files_shellcheck+="\n$file"
+  fi
 done <<<"$shell_files"
 
 new_section_level_2 "All shell files should start with '${desired_shebang}'..."

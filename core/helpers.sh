@@ -6,8 +6,8 @@ set -euo pipefail
 #   source "${CLI_DIR}/core/helpers.sh"
 
 for helper in "${CLI_DIR}/core/helpers/"*".sh"; do
-    if [[ -f "$helper" ]]; then
-        # shellcheck disable=SC1090
-        source "$helper"
-    fi
+  if [[ -f "$helper" ]]; then
+    # shellcheck disable=SC1090
+    source "$helper"
+  fi
 done

@@ -27,7 +27,7 @@ fi
 
 shell_files_array=()
 while IFS= read -r file; do
-    shell_files_array+=("$file")
+  shell_files_array+=("$file")
 done <<<"$shell_files"
 
 new_section_level_2 "Every shell file should pass the shell linter (ShellCheck)..."

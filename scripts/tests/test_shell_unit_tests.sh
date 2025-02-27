@@ -27,9 +27,9 @@ fi
 
 pushd "$CLI_DIR" >/dev/null
 while IFS= read -r test_file; do
-    echo
-    get_test_running_message "$test_file" "$CLI_DIR"
-    "$test_file"
+  echo
+  get_test_running_message "$test_file" "$CLI_DIR"
+  "$test_file"
 done <<<"$test_files"
 popd >/dev/null
 
