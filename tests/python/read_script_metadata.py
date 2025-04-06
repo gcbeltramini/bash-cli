@@ -2,8 +2,9 @@
 # https://packaging.python.org/en/latest/specifications/inline-script-metadata/#reference-implementation
 
 import re
-import tomllib
 import sys
+
+import tomllib
 
 REGEX: str = r'(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^# ///$'
 
@@ -28,7 +29,7 @@ def read(script: str) -> dict | None:
 
 if __name__ == '__main__':
     filename: str = sys.argv[1]
-    with open(filename, 'r') as file:
+    with open(filename) as file:
         script: str = file.read()
     metadata: dict | None = read(script)
     if metadata is not None:

@@ -43,22 +43,36 @@ while IFS= read -r python_script; do
 done <<<"$python_scripts"
 check_if_error "$invalid_files_metadata"
 
-new_section_level_2 "Run unit tests for Python scripts with pytest"
-if command -v uv >/dev/null; then
-  uv run --with 'pytest>=8,<9' -- python3 -m pytest "$CLI_DIR/tests/python"
-else
+if ! command -v uv >/dev/null; then
+  new_section_level_2 "Creating virtual environment for the next tests"
   venv_name=".venv_pytest"
   python3 -m venv "$venv_name"
   source "$venv_name/bin/activate"
   echo
-  echo 'Installing pytest...'
-  python3 -m pip install 'pytest>=8,<9'
-  echo
+  echo "Installing 'pytest' and 'ruff'..."
+  python3 -m pip install 'pytest>=8,<9' 'ruff<1'
+fi
+
+new_section_level_2 "Run unit tests for Python scripts with pytest"
+if command -v uv >/dev/null; then
+  uv run --with 'pytest>=8,<9' -- python3 -m pytest "$CLI_DIR/tests/python"
+else
+  source "$venv_name/bin/activate"
   echo 'Running tests...'
   python3 -m pytest "$CLI_DIR/tests/python"
   deactivate
-  rm -rf "$venv_name"
 fi
 
+new_section_level_2 "Run linter for Python files"
+if command -v uv >/dev/null; then
+  uv run --with 'ruff<1' -- ruff check . --exclude "$CLI_DIR/scripts/doc_parser/docopt_ng/"
+else
+  source "$venv_name/bin/activate"
+  echo 'Running linter...'
+  ruff check . --exclude "$CLI_DIR/scripts/doc_parser/docopt_ng/"
+  deactivate
+fi
+
+rm -rf "$venv_name"
 echo
 echo_done
