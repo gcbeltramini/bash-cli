@@ -43,9 +43,9 @@ while IFS= read -r python_script; do
 done <<<"$python_scripts"
 check_if_error "$invalid_files_metadata"
 
+venv_name=".venv_python_tests"
 if ! command -v uv >/dev/null; then
   new_section_level_2 "Creating virtual environment for the next tests"
-  venv_name=".venv_pytest"
   python3 -m venv "$venv_name"
   source "$venv_name/bin/activate"
   echo
