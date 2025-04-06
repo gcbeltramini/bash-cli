@@ -7,7 +7,6 @@
 
 import argparse
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Test script.")
     parser.add_argument("--some-int", type=int, help="Some number")
