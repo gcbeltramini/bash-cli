@@ -36,18 +36,28 @@ find_relevant_files() {
   find "$path_name" \
     -type f \
     -not -name '.DS_Store' \
+    -not -name '*.exe' \
     -not -name '*.pyc' \
     -not -name '*.pyo' \
     -not -name '*.egg' \
     -not -name '*.egg-info' \
+    -not -path '*/*.egg-info/*' \
     -not -name '*.whl' \
     -not -path '*/__pycache__/*' \
+    -not -path '*/.mypy_cache/*' \
+    -not -path '*/.pytest_cache/*' \
+    -not -path '*/.ruff_cache/*' \
     -not -path '*/.venv/*' \
     -not -path '*/venv/*' \
+    -not -path '*/.venv_*/*' \
+    -not -path '*/venv_*/*' \
     -not -path '*/.ipynb_checkpoints/*' \
     -not -path '*/node_modules/*' \
+    -not -name '*.gz' \
     -not -name '*.tar' \
     -not -name '*.zip' \
+    -not -name '*.jpg' \
+    -not -name '*.png' \
     -not -name '*.tfstate' \
     -not -name '*.tfstate.backup' \
     -not -name '*.coverage' \
