@@ -92,6 +92,7 @@ get_all_files() {
     -type f \
     -not -path '*/.git/*' \
     -not -path '*/.pytest_cache/*' \
+    -not -path '*/.ruff_cache/*' \
     -not -path '*/.venv*/*' \
     -not -name '*.pyc' \
     -not -name '.DS_Store'
