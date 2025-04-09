@@ -80,6 +80,18 @@ test_echo_success() {
   assertEquals "$expected" "$result"
 }
 
+test_echo_progress() {
+  local result expected
+
+  result=$(echo_progress 'Some text' 2>&1)
+  expected=$(echo -e '\x1b[90mSome text\x1b[0m')
+  assertEquals "$expected" "$result"
+}
+
+test_exit_with_error() {
+  assertFalse "exit_with_error 'Some error message'"
+}
+
 test_new_section() {
   local result expected
 
@@ -100,6 +112,16 @@ test_new_section_with_color() {
 My new Section
 ====================================================================================================\x1b[0m')
   assertEquals "$expected" "$result"
+}
+
+test_confirm() {
+  assertTrue "echo 'yes' | confirm 'Accept y or yes, case-insensitive'"
+  assertTrue "echo 'YeS' | confirm 'Accept y or yes, case-insensitive'"
+  assertTrue "echo 'yEs' | confirm 'Accept y or yes, case-insensitive'"
+  assertTrue "echo 'y' | confirm 'Accept y or yes, case-insensitive'"
+  assertTrue "echo 'Y' | confirm 'Accept y or yes, case-insensitive'"
+  assertFalse "echo 'foo' | confirm 'Anything else is no'"
+  assertFalse "echo 'no' | confirm 'Anything else is no'"
 }
 
 test_debug_var_in_file() {

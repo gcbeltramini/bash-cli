@@ -119,6 +119,31 @@ echo_success() {
   echo_color >&2 "green" 'Success!'
 }
 
+echo_progress() {
+  # Show progress message.
+  #
+  # Usage:
+  #   echo_progress <text>
+  #
+  # Examples:
+  #   echo_progress "Doing something..."
+  local -r text=$1
+  echo_color >&2 "gray" "$text"
+}
+
+exit_with_error() {
+  # Show error message and exit.
+  #
+  # Usage:
+  #   exit_with_error <text>
+  #
+  # Examples:
+  #   exit_with_error "Your command failed."
+  local -r text=$1
+  echo_error "$text"
+  return 1
+}
+
 # Sections
 # --------------------------------------------------------------------------------------------------
 
@@ -148,6 +173,29 @@ new_section_with_color() {
   local -r title=$2
   local -r section=$(new_section "$title")
   echo_color "$color" "$section"
+}
+
+# Confirmation
+# --------------------------------------------------------------------------------------------------
+
+confirm() {
+  # Ask for confirmation.
+  #
+  # Usage:
+  #   confirm [<text>]
+  #
+  # Examples:
+  #   confirm "Are you sure?" && echo "Yes" || echo "No"
+  local -r text=${1:-'Do you want to continue?'}
+  read -r -p "${text} [y/N] " response
+  case "$response" in
+  [yY][eE][sS] | [yY])
+    true
+    ;;
+  *)
+    false
+    ;;
+  esac
 }
 
 # Debugging
