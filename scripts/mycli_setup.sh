@@ -77,6 +77,8 @@ for shell_file in "${shell_files[@]}"; do
     echo "'$shell_file' already exists. Backup created: '$backup_path'"
   fi
 
+  touch "$shell_file"
+
   echo -n "Removing multiple empty lines and the section between '$start_pattern' and '$end_pattern' in file '$shell_file'... "
   sed -e "/^[[:space:]]*$/N;/^\n[[:space:]]*$/D" -e "/^[[:space:]]*$start_pattern/,/$end_pattern/d" "$shell_file" | sponge "$shell_file"
   show_done
