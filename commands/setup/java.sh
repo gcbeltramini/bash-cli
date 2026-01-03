@@ -110,5 +110,5 @@ echo
 echo "'jenv doctor':"
 jenv doctor || :
 
-new_section_with_color "$color" "'java --version' output"
-java --version
+new_section_with_color "$color" "'java -version' output"
+java -version
