@@ -70,12 +70,21 @@ jenv versions --verbose
 # echo "Run 'jenv remove ...' if you get the error 'jenv: version ... is not installed'"
 
 new_section_with_color "$color" "Show all 'java' command paths"
-java_paths=$(find /Library/Java/JavaVirtualMachines \
-  -type f \
-  -path '*/Contents/Home/bin/*' \
-  -name 'java' |
-  sed 's:bin/java$::')
-echo "$java_paths"
+
+java_dirs=()
+[[ -d /Library/Java/JavaVirtualMachines ]] && java_dirs+=("/Library/Java/JavaVirtualMachines")
+[[ -d /opt/homebrew/Cellar ]] && java_dirs+=("/opt/homebrew/Cellar")
+
+if [[ ${#java_dirs[@]} -eq 0 ]]; then
+  exit_with_error "No Java installation directories found."
+else
+  java_paths=$(find "${java_dirs[@]}" \
+    -type f \
+    -path '*/Contents/Home/bin/*' \
+    -name 'java' |
+    sed 's:bin/java$::')
+  echo "$java_paths"
+fi
 echo_done
 
 new_section_with_color "$color" "Add all 'java' commands to 'jenv'"
