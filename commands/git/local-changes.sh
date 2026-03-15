@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "${CLI_DIR}/core/helpers.sh"
 
-##? Find Git repositories with uncommitted changes.
+##? Find git repositories with uncommitted changes.
 ##?
 ##? Usage:
 ##?   git local-changes [<path>]

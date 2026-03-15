@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "${CLI_DIR}/core/helpers.sh"
 
-##? Find Git repositories with local branches.
+##? Find git repositories with local branches.
 ##?
 ##? Usage:
 ##?   git local-branches [<path>]

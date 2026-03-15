@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "${CLI_DIR}/core/helpers.sh"
 
-##? Find Git repositories with stashed changes.
+##? Find git repositories with stashed changes.
 ##?
 ##? Usage:
 ##?   git stashed-changes [<path>]
