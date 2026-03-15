@@ -16,7 +16,7 @@ test_backup_if_exists() {
 test_find_relevant_files() {
   local result expected
 
-  result=$(find_relevant_files "tests/resources/commands/hello" | sort)
+  result=$(find_relevant_files "tests/resources/commands/hello" | LC_ALL=C sort)
   expected=$(
     cat <<-EOF
 	tests/resources/commands/hello/README.md

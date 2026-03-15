@@ -5,7 +5,7 @@ test_use_gnu_tool() {
   local function_return result
 
   function_return="dummy function"
-  # shellcheck disable=SC2317
+  # shellcheck disable=SC2317,SC2329
   gfoo() { echo "$function_return"; }
 
   unset -f foo 2>/dev/null
@@ -20,7 +20,7 @@ test_use_all_gnu_tools() {
 
   # Guarantee that the function 'gdate' is defined
   function_return="dummy function"
-  # shellcheck disable=SC2317
+  # shellcheck disable=SC2317,SC2329
   gdate() { echo "$function_return"; }
 
   unset -f date 2>/dev/null
