@@ -923,7 +923,6 @@ def docopt(
         result = ParsedOptions((a.name, a.value) for a in (pattern.flat() + collected))
         return convert_to_bash(result)
     if left:
-        # TODO: Make output of `left` and `collected` more friendly in the error message
         # raise DocoptExit(
         #     f"Warning: found unmatched (duplicate?) arguments {left}",
         #     collected=collected,
@@ -931,8 +930,8 @@ def docopt(
         # )
         # cli customization:
         raise DocoptExit(
-            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: {left}\n"
-            f"       Arguments received: {collected}",
+            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: {dict((a.name, a.value) for a in left)}\n"
+            f"       Arguments received: {dict((a.name, a.value) for a in collected)}\n",
             collected=collected,
             left=left,
         )
