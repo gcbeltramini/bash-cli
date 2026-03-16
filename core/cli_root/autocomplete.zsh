@@ -53,7 +53,7 @@ _mycli_completions() {
       return 0
     fi
     local -r help=$(mycli "${words[2]}" "${words[3]}" --help)
-    local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "$words[3]")
+    local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "${words[3]}")
 
     # Remove arguments that were already typed by the user
     # words[1]=mycli, words[2]=<cmd1>, words[3]=<cmd2> are already considered above
