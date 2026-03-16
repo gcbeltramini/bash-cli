@@ -249,9 +249,12 @@ _mycli_get_arg_description() {
   # Examples:
   #   _mycli_get_arg_description "--foo" "$docopt_options" "$parameter_names_in_options" # --> "Foo description"
   local -r arg=$1
-  local -r docopt_options=$2
+  local -r docopt_options_raw=$2
   local -r parameter_names_in_options=$3
   local line_number
+
+  # Remove parameters that start with "<" (must be consistent with the function `_mycli_get_args_description`)
+  local -r docopt_options=$(echo "$docopt_options_raw" | grep -vE '^[[:space:]]*<')
 
   # Remove lines with more than 5 leading spaces (description lines). This must be consistent with
   # the function `_mycli_extract_parameter_names`.
@@ -276,8 +279,12 @@ _mycli_get_args_description() {
   # Examples:
   #   _mycli_get_args_description "--foo\n--some-flag" "$docopt_options" # --> "--foo:Foo description\n--some-flag:Some flag"
   local -r args=$1
-  local -r docopt_options=$2
+  local -r docopt_options_raw=$2
   local -r description_fallback="<no description>"
+
+  # Remove parameters that start with "<" (must be consistent with the function `_mycli_get_arg_description`)
+  local -r docopt_options=$(echo "$docopt_options_raw" | grep -vE '^[[:space:]]*<')
+
   local -r options_without_descriptions=$(_mycli_extract_parameter_names "$docopt_options")
 
   local args_description=""
