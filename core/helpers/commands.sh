@@ -13,3 +13,27 @@ command_exists() {
   local -r cmd=$1
   command -v "$cmd" >/dev/null
 }
+
+commands_find() {
+  # Find commands that contain a given regular expression.
+  #
+  # It is useful to:
+  # - Find which commands are available. For example, if you want to find all commands related to "git",
+  #   you can use `commands_find git`.
+  # - Find which commands are autocompleted, if you search for commands that start with a certain text.
+  #
+  # Usage:
+  #   commands_find [<regex>]
+  #
+  # Examples:
+  #   commands_find        # all commands
+  #   commands_find foo    # commands that contain "foo"
+  #   commands_find '^bar' # commands that start with "bar"
+  #   commands_find 'baz$' # commands that end with "baz"
+  #
+  # References:
+  # - https://unix.stackexchange.com/a/127508
+  # - https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
+  local -r regex=${1:-}
+  compgen -abck -A function | grep -e "$regex" | sort | uniq
+}

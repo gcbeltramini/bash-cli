@@ -22,3 +22,13 @@ run_python_script() {
 
   uv run "$python_script" "${script_args[@]}"
 }
+
+ipynb_cleanmetadata() {
+  # Clean all metadata from Jupyter notebook files.
+  #
+  # Usage:
+  #   ipynb_cleanmetadata <file> [<output-file>]
+  local -r file="$1"
+  local -r output_file="${2:-$file}"
+  jq --indent 1 '.cells[].metadata = {}' "$file" | sponge "$output_file"
+}
