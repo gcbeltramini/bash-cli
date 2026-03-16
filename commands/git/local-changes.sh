@@ -17,7 +17,7 @@ declare path
 path=${path:-.}
 
 echo_progress "Repositories with uncommitted changes:"
-find "$path" -type d -name ".git" | while read -r git_dir; do
+find "$path" -type d -name ".git" -print0 | while IFS= read -r -d $'\0' git_dir; do
   repo_dir=$(dirname "$git_dir")
   git_status_output=$(git -C "$repo_dir" status --porcelain)
   if [[ -n "$git_status_output" ]]; then
