@@ -7,7 +7,7 @@ _mycli_completions() {
   # Autocomplete function for the CLI.
   #
   # This function is called by the autocomplete system when the user presses the TAB key.
-  # It autocompletes the first and second arguments of the CLI, possible additional commands and
+  # It autocompletes the first and second arguments of the CLI, and possible additional commands and
   # parameters:
   #   mycli <cmd1> <cmd2> <cmd3>... --param1 ...
   local -r cur=${words[CURRENT]}
@@ -49,7 +49,7 @@ _mycli_completions() {
 
   # Case 3: The user is completing the parameters or other commands
   else
-    local -r help=$(mycli "${words[2]}" "$words[3]" --help)
+    local -r help=$(mycli "${words[2]}" "${words[3]}" --help)
     local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "$words[3]")
 
     # Remove arguments that were already typed by the user
