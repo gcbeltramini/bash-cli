@@ -53,8 +53,9 @@ _mycli_completions() {
     local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "$words[3]")
 
     # Remove arguments that were already typed by the user
+    # words[1]=mycli, words[2]=<cmd1>, words[3]=<cmd2> are already considered above
     local args_with_description=$all_args_with_description
-    for word in "${words[@]}"; do
+    for word in "${words[4,-1]}"; do
       args_with_description=$(echo "$args_with_description" | sed "/^$word:/d")
     done
 
