@@ -49,6 +49,9 @@ _mycli_completions() {
 
   # Case 3: The user is completing the parameters or other commands
   else
+    if [[ ! -f "${MYCLI_HOME}/commands/${words[2]}/${words[3]}.sh" ]]; then
+      return 0
+    fi
     local -r help=$(mycli "${words[2]}" "${words[3]}" --help)
     local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "$words[3]")
 
