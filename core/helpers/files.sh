@@ -205,6 +205,12 @@ ls_file_time() {
   #   ls_file_time [<path>]
   local -r path_name=${1:-.}
 
+  if [ -z "$(ls -A "$path_name")" ]; then # directory is empty
+    # echo -e "CREATED\tMODIFIED\tSTATUS_CHANGED\tACCESSED\tSIZE\tNAME" # print only the header
+    echo_warn "Directory '$path_name' is empty."
+    return 0
+  fi
+
   (printf 'CREATED\tMODIFIED\tSTATUS_CHANGED\tACCESSED\tSIZE\tNAME\n' &&
     stat --printf '%w\t%y\t%z\t%x\t%s\t%n\n' "$path_name"/*) | # in macOS, use `stat -f '%SB%t%Sm%t%Sc%t%Sa%t%z%t%N' -t '%Y-%m-%d %H:%M:%S'`
     column -t -s $'\t'
