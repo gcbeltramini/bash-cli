@@ -71,7 +71,7 @@ test_has_exactly_one_line_at_the_end() {
 }
 
 test_yaml2json() {
-  local result expected
+  local result expected yaml_content
 
   yaml_content=$(
     cat <<-EOF
