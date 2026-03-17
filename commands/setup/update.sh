@@ -6,7 +6,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##? Update Homebrew and conda packages.
 ##?
 ##? Usage:
-##?   setup update [--brew --conda]
+##?   setup update [--brew] [--conda]
 ##?
 ##? Options:
 ##?   --brew   Update Homebrew packages

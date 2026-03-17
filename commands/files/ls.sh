@@ -7,9 +7,9 @@ set -euo pipefail
 ##?
 ##? Usage:
 ##?   files ls (files | dirs) [<path>]
-##?   files ls -l [--short <path>]
+##?   files ls -l [--short] [<path>]
 ##?   files ls file-time [<path>]
-##?   files ls count-ext [--maxdepth=<d> <path>]
+##?   files ls count-ext [--maxdepth=<d>] [<path>]
 ##?
 ##? Options:
 ##?   <path>          Path to the directory to search for files [default: .]
