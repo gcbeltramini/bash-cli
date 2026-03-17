@@ -1,3 +1,3 @@
-# `mycli cnd`
+# `mycli cmd`
 
 Deal with commands
