@@ -24,7 +24,7 @@ run_python_script() {
 }
 
 ipynb_cleanmetadata() {
-  # Clean all metadata from Jupyter notebook files.
+  # Clean cell-level metadata from Jupyter notebook files.
   #
   # Usage:
   #   ipynb_cleanmetadata <file> [<output-file>]
