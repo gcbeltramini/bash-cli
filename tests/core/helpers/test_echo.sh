@@ -80,10 +80,10 @@ test_echo_success() {
   assertEquals "$expected" "$result"
 }
 
-test_echo_progress() {
+test_echo_gray() {
   local result expected
 
-  result=$(echo_progress 'Some text' 2>&1)
+  result=$(echo_gray 'Some text' 2>&1)
   expected=$(echo -e '\x1b[90mSome text\x1b[0m')
   assertEquals "$expected" "$result"
 }

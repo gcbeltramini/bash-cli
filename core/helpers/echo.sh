@@ -119,14 +119,14 @@ echo_success() {
   echo_color >&2 "green" 'Success!'
 }
 
-echo_progress() {
-  # Show progress message.
+echo_gray() {
+  # Show message in gray, usually for less important information or to indicate that something is in progress.
   #
   # Usage:
-  #   echo_progress <text>
+  #   echo_gray <text>
   #
   # Examples:
-  #   echo_progress "Doing something..."
+  #   echo_gray "Doing something..."
   local -r text=$1
   echo_color >&2 "gray" "$text"
 }

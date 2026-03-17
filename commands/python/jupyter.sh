@@ -18,6 +18,6 @@ declare clean_metadata file output_file
 
 if $clean_metadata; then
   ipynb_cleanmetadata "$file" "${output_file:-$file}"
-  echo_progress "Metadata cleaned from '$file' (output: '${output_file:-$file}')"
+  echo_gray "Metadata cleaned from '$file' (output: '${output_file:-$file}')"
   echo_done
 fi
