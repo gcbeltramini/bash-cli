@@ -214,7 +214,7 @@ count_ext() {
   local -r max_depth=${2:-1}
 
   find "$path_name" -maxdepth "$max_depth" -type f -not -path '*/\.*' |
-    sed -n 's/..*\.//p' |
+    sed -n '/\./s/.*\.//p' | # Extract the extension (characters after the last dot)
     sort | uniq -c |
     awk 'BEGIN {print "EXTENSION\tCOUNT";} {print $2"\t"$1}' |
     column -t -s $'\t'

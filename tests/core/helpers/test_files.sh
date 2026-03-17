@@ -153,7 +153,7 @@ test_ls_file_time() {
 }
 
 test_count_ext() {
-  local result
+  local result tmp_dir
 
   result=$(count_ext "tests/resources/commands/hello")
   assertEquals 1 "$(echo "$result" | grep -c 'EXTENSION' || true)"
@@ -164,6 +164,14 @@ test_count_ext() {
   result=$(count_ext "tests/resources/commands" 2)
   assertEquals 1 "$(echo "$result" | grep -c 'EXTENSION' || true)"
   assertEquals 1 "$(echo "$result" | grep -c '^sh.*2' || true)"
+
+  tmp_dir="$(mktemp -d)"
+  touch "$tmp_dir/a.sh"
+  touch "$tmp_dir/no_extension"
+  result=$(count_ext "$tmp_dir")
+  rm -rf "$tmp_dir"
+  assertEquals 1 "$(echo "$result" | grep -c '^sh.*1' || true)"
+  assertEquals 0 "$(echo "$result" | grep -c '^no_extension' || true)"
 }
 
 oneTimeSetUp() {
