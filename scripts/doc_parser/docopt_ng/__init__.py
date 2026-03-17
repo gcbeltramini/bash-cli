@@ -930,8 +930,10 @@ def docopt(
         # )
         # cli customization:
         raise DocoptExit(
-            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: {dict((a.name, a.value) for a in left)}\n"
-            f"       Arguments received: {dict((a.name, a.value) for a in collected)}\n",
+            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: "
+            f"[{', '.join(f'{a.name}={a.value!r}' for a in left)}]\n"
+            f"       Arguments received: "
+            f"[{', '.join(f'{a.name}={a.value!r}' for a in collected)}]\n",
             collected=collected,
             left=left,
         )
