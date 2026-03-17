@@ -114,6 +114,11 @@ yaml2json() {
   # Usage:
   #   yaml2json <file>
   local -r file=$1
+
+  if ! python3 -c 'import yamlx' &>/dev/null; then
+    exit_with_error "PyYAML is not installed (Python package \"yaml\"); cannot convert '$file' to JSON."
+  fi
+
   local -r code='import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout, indent=2)'
   python3 -c "$code" <"$file"
   # ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' "$file"
