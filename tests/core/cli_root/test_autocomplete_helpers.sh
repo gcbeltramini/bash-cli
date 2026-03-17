@@ -367,8 +367,7 @@ EOF
 --short:Select some columns for 'ls -l'
 --maxdepth:Maximum depth to search for files when using 'count-ext' [default: 1]
 files:List files in the directory
-dirs:List directories in the directory
-file-time:Display file creation, modification, change and access times
+dirs:<no description>
 count-ext:Count the number of files with each extension; hidden files are ignored.
 --help:Show help message
 EOF
