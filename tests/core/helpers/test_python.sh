@@ -25,7 +25,7 @@ test_run_python_script() {
 }
 
 test_ipynb_cleanmetadata() {
-  local result tmp_file
+  local result tmp_file ipynb_content expected input_content
 
   # In-place modification (default: output-file = input-file)
   tmp_file="$(mktemp /tmp/test-XXXXXX.ipynb)"
