@@ -59,7 +59,8 @@ _mycli_completions() {
     # words[1]=mycli, words[2]=<cmd1>, words[3]=<cmd2> are already considered above
     local args_with_description=$all_args_with_description
     for word in "${(@)words[4,-1]}"; do # same as: "${words[@]:3}" or ${words[4,-1]} (unquoted to allow word splitting)
-      args_with_description=$(echo "$args_with_description" | sed "/^$word:/d")
+      local option_name=${word%%=*}
+      args_with_description=$(echo "$args_with_description" | awk -F':' -v arg="$option_name" '$1 != arg')
     done
 
     if [[ -z "$args_with_description" ]]; then
