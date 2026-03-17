@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-##? Clean metadata from Jupyter notebook files.
+##? Clean cell metadata from Jupyter notebook files.
 ##?
 ##? Usage:
 ##?   python jupyter clean-metadata <file> [<output-file>]
 ##?
 ##? Options:
-##?   clean-metadata  Clean all metadata from Jupyter notebook files.
+##?   clean-metadata  Clean cell-level metadata from Jupyter notebook files
 ##?
 ##? Examples:
 ##?   python jupyter clean-metadata my-notebook.ipynb
