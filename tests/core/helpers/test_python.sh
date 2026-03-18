@@ -28,7 +28,9 @@ test_ipynb_cleanmetadata() {
   local result tmp_file ipynb_content expected input_content
 
   # In-place modification (default: output-file = input-file)
-  tmp_file="$(mktemp /tmp/test-XXXXXX.ipynb)"
+  tmp_file="$(mktemp /tmp/test-XXXXXX)"
+  mv "$tmp_file" "${tmp_file}.ipynb"
+  tmp_file="${tmp_file}.ipynb"
   ipynb_content=$(
     cat <<'JSON'
 {
