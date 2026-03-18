@@ -60,7 +60,7 @@ run_command() {
     echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to find the command '${cmd1} ${cmd2}'."
     echo >&2 -e "       Make sure that the following path exists:"
     echo >&2 -e "         '${commands_dir}/${cmd1}${asterisk}/${cmd2}${asterisk}.sh'"
-    echo >&2 -e "       ('${asterisk}' denote 0 or more characters in the path above)"
+    echo >&2 -e "       ('${asterisk}' denotes 0 or more characters in the path above)"
     echo >&2
     list_commands "$cmd1" >&2
     exit 1
