@@ -7,7 +7,7 @@ _mycli_completions() {
   # Autocomplete function for the CLI.
   #
   # This function is called by the autocomplete system when the user presses the TAB key.
-  # It autocompletes the first and second arguments of the CLI, possible additional commands and
+  # It autocompletes the first and second arguments of the CLI, and possible additional commands and
   # parameters:
   #   mycli <cmd1> <cmd2> <cmd3>... --param1 ...
   local -r cur=${words[CURRENT]}
@@ -49,13 +49,18 @@ _mycli_completions() {
 
   # Case 3: The user is completing the parameters or other commands
   else
-    local -r help=$(mycli "${words[2]}" "$words[3]" --help)
-    local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "$words[3]")
+    if [[ ! -f "${MYCLI_HOME}/commands/${words[2]}/${words[3]}.sh" ]]; then
+      return 0
+    fi
+    local -r help=$(mycli "${words[2]}" "${words[3]}" --help)
+    local -r all_args_with_description=$(_mycli_extract_arguments_with_descriptions "$help" "${words[2]}" "${words[3]}")
 
     # Remove arguments that were already typed by the user
+    # words[1]=mycli, words[2]=<cmd1>, words[3]=<cmd2> are already considered above
     local args_with_description=$all_args_with_description
-    for word in "${words[@]}"; do
-      args_with_description=$(echo "$args_with_description" | sed "/^$word:/d")
+    for word in "${(@)words[4,-1]}"; do # same as: "${words[@]:3}" or ${words[4,-1]} (unquoted to allow word splitting)
+      local option_name=${word%%=*}
+      args_with_description=$(echo "$args_with_description" | awk -F':' -v arg="$option_name" '$1 != arg')
     done
 
     if [[ -z "$args_with_description" ]]; then

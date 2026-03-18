@@ -16,7 +16,7 @@ test_backup_if_exists() {
 test_find_relevant_files() {
   local result expected
 
-  result=$(find_relevant_files "tests/resources/commands/hello" | sort)
+  result=$(find_relevant_files "tests/resources/commands/hello" | LC_ALL=C sort)
   expected=$(
     cat <<-EOF
 	tests/resources/commands/hello/README.md
@@ -70,6 +70,38 @@ test_has_exactly_one_line_at_the_end() {
   assertEquals 1 "$result"
 }
 
+test_yaml2json() {
+  # If we want to avoid the dependence on 'PyYAML', uncomment the lines below.
+  # if ! python -c 'import yaml' &>/dev/null; then
+  #   echo >&2 "Skipping 'test_yaml2json': PyYAML (python module 'yaml') is not installed."
+  #   return 0
+  # fi
+
+  local result expected yaml_content
+
+  yaml_content=$(
+    cat <<-EOF
+name: foo
+value: 42
+nested:
+  key: bar
+EOF
+  )
+  result=$(yaml2json <(echo "$yaml_content"))
+  expected=$(
+    cat <<-EOF
+{
+  "name": "foo",
+  "value": 42,
+  "nested": {
+    "key": "bar"
+  }
+}
+EOF
+  )
+  assertEquals "$expected" "$result"
+}
+
 test_find_dirs_with_only_hidden_files() {
   local result expected
 
@@ -83,9 +115,75 @@ EOF
   assertEquals "$expected" "$result"
 }
 
+test_ls_files() {
+  local result
+
+  result=$(ls_files "tests/resources/commands")
+  assertEquals 1 "$(echo "$result" | grep -c 'no_newline_at_the_end.txt' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c 'problematic file.sh' || true)"
+  assertEquals 0 "$(echo "$result" | grep -c '^d' || true)"
+}
+
+test_ls_dirs() {
+  local result
+
+  result=$(ls_dirs "tests/resources/commands")
+  assertEquals 1 "$(echo "$result" | grep -c 'foo' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c 'hello' || true)"
+  assertEquals 0 "$(echo "$result" | grep -c 'no_newline_at_the_end.txt' || true)"
+  assertEquals 0 "$(echo "$result" | grep -cv '^d' || true)"
+}
+
+test_ll_full() {
+  local result
+
+  result=$(ll_full "tests/resources/commands/hello")
+  assertEquals 1 "$(echo "$result" | head -1 | grep -c 'PERMISSION' || true)"
+  assertTrue "[ $(echo "$result" | wc -l) -ge 3 ]"
+}
+
+test_ll_part() {
+  local result
+
+  result=$(ll_part "tests/resources/commands/hello")
+  assertEquals 1 "$(echo "$result" | head -1 | grep -c 'SIZE' || true)"
+  assertTrue "[ $(echo "$result" | wc -l) -ge 3 ]"
+}
+
+test_ls_file_time() {
+  local result
+
+  result=$(ls_file_time "tests/resources/commands/hello")
+  assertEquals 1 "$(echo "$result" | head -1 | grep -c 'CREATED' || true)"
+  assertTrue "[ $(echo "$result" | wc -l) -ge 2 ]"
+}
+
+test_count_ext() {
+  local result tmp_dir
+
+  result=$(count_ext "tests/resources/commands/hello")
+  assertEquals 1 "$(echo "$result" | grep -c 'EXTENSION' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c '^md' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c '^py' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c '^sh' || true)"
+
+  result=$(count_ext "tests/resources/commands" 2)
+  assertEquals 1 "$(echo "$result" | grep -c 'EXTENSION' || true)"
+  assertEquals 1 "$(echo "$result" | grep -c '^sh.*2' || true)"
+
+  tmp_dir="$(mktemp -d)"
+  touch "$tmp_dir/a.sh"
+  touch "$tmp_dir/no_extension"
+  result=$(count_ext "$tmp_dir")
+  rm -rf "$tmp_dir"
+  assertEquals 1 "$(echo "$result" | grep -c '^sh.*1' || true)"
+  assertEquals 0 "$(echo "$result" | grep -c '^no_extension' || true)"
+}
+
 oneTimeSetUp() {
   mock_file="mock_file.txt"
   touch "$mock_file"
+  . core/helpers/gnu_tools.sh # calls 'use_all_gnu_tools'
   . core/helpers/files.sh
 }
 

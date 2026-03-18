@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "${CLI_DIR}/core/helpers.sh"
 
-##? Find Git repositories with local branches.
+##? Find git repositories with local branches.
 ##?
 ##? Usage:
 ##?   git local-branches [<path>]
@@ -16,8 +16,8 @@ declare path
 
 path=${path:-.}
 
-echo_progress "Repositories with local branches:"
-find "$path" -type d -name ".git" | while read -r git_dir; do
+echo_gray "Repositories with local branches:"
+find "$path" -type d -name ".git" -print0 | while IFS= read -r -d $'\0' git_dir; do
   repo_dir=$(dirname "$git_dir")
   local_branches=$(git -C "$repo_dir" branch --format="%(refname:short)" | grep -vE '^\*|main|master|develop|DEV' || :)
   if [[ -n "$local_branches" ]]; then

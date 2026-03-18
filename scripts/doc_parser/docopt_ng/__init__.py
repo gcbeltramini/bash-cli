@@ -843,7 +843,7 @@ def docopt(
     default_help: bool = True,
     version: Any = None,
     options_first: bool = False,
-# ) -> ParsedOptions:
+    # ) -> ParsedOptions:
 ) -> str:  # cli customization
     """Parse `argv` based on command-line interface described in `docstring`.
 
@@ -923,7 +923,6 @@ def docopt(
         result = ParsedOptions((a.name, a.value) for a in (pattern.flat() + collected))
         return convert_to_bash(result)
     if left:
-        # TODO: Make output of `left` and `collected` more friendly in the error message
         # raise DocoptExit(
         #     f"Warning: found unmatched (duplicate?) arguments {left}",
         #     collected=collected,
@@ -931,8 +930,10 @@ def docopt(
         # )
         # cli customization:
         raise DocoptExit(
-            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: {left}\n"
-            f"       Arguments received: {collected}",
+            f"\x1b[31mERROR:\x1b[0m Found unknown or duplicate arguments: "
+            f"[{', '.join(f'{a.name}={a.value!r}' for a in left)}]\n"
+            f"       Arguments received: "
+            f"[{', '.join(f'{a.name}={a.value!r}' for a in collected)}]\n",
             collected=collected,
             left=left,
         )
@@ -942,22 +943,24 @@ def docopt(
 # cli customization:
 def show_log(message: str) -> None:
     import inspect
+
     frame = inspect.currentframe().f_back
     filename = frame.f_code.co_filename
     line_number = frame.f_lineno
-    print(f'{filename}:{line_number} - {message}', file=sys.stderr)
+    print(f"{filename}:{line_number} - {message}", file=sys.stderr)
 
 
 # cli customization:
 def convert_to_bash(parsed_options: ParsedOptions) -> str:
     import os
-    if os.getenv('MYCLI_DEBUG'):
-        show_log(f'parsed_options = {parsed_options}')
+
+    if os.getenv("MYCLI_DEBUG"):
+        show_log(f"parsed_options = {parsed_options}")
 
     bash_vars_definition: list[str] = []
     var_names_list: list[str] = []
     for key, value in parsed_options.items():
-        var_name_bash: str = str(key).lstrip('-<').rstrip('>').replace('-', '_')
+        var_name_bash: str = str(key).lstrip("-<").rstrip(">").replace("-", "_")
         if not var_name_bash:
             # This may happen with "--"
             continue
@@ -970,7 +973,7 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
         elif value is False:
             value_bash: str = '"false"'
         elif isinstance(value, list):
-            value_bash: str = '(' + ' '.join(f'"{item}"' for item in value) + ')'
+            value_bash: str = "(" + " ".join(f'"{item}"' for item in value) + ")"
         else:
             value_bash: str = f'"{value}"'
 
@@ -981,23 +984,30 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
             else:
                 # `-f` could be an alias for something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
                 # Since we don't know the original option name, we can't remove the equal sign.
-                show_log(f'WARNING: The value for {key} starts with an equal sign: "{value}"\n'
-                         'You may need to remove the equal sign when calling the command.')
+                show_log(
+                    f'WARNING: The value for {key} starts with an equal sign: "{value}"\n'
+                    "You may need to remove the equal sign when calling the command."
+                )
 
-        bash_vars_definition.append(f'export {var_name_bash:s}={value_bash:s}')
+        bash_vars_definition.append(f"export {var_name_bash:s}={value_bash:s}")
 
     var_names_duplicates: list[str] = get_duplicate_vals(var_names_list)
     if var_names_duplicates:
         # This may happen when an action and an argument have the same name
-        raise DocoptExit(f"\x1b[31mERROR:\x1b[0m Found duplicate arguments: {var_names_duplicates}")
+        raise DocoptExit(
+            f"\x1b[31mERROR:\x1b[0m Found duplicate arguments: {var_names_duplicates}"
+        )
 
-    bash_script = '\n'.join(sorted(bash_vars_definition))
-    return ('# <<-- docopt parsed arguments -->>\n'
-            f'{bash_script:s}\n'
-            '# <<----------------------------->>\n')
+    bash_script = "\n".join(sorted(bash_vars_definition))
+    return (
+        "# <<-- docopt parsed arguments -->>\n"
+        f"{bash_script:s}\n"
+        "# <<----------------------------->>\n"
+    )
 
 
 # cli customization:
 def get_duplicate_vals(li: list[str]) -> list[str]:
     from collections import Counter
+
     return [element for element, count in Counter(li).items() if count > 1]

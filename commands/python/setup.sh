@@ -68,14 +68,12 @@ if ! $no_update; then
   new_section_with_color "$color" "Install Python packages"
   "${HOME}/miniforge3/condabin/conda" install -yn base \
     boto3 \
-    jupyter \
     jupyterlab \
     jupyterlab_execute_time \
     matplotlib \
     nb_conda_kernels \
-    notebook \
     pandas \
-    pip \
+    pipdeptree \
     pytest \
     pytest-xdist \
     seaborn \

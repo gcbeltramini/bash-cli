@@ -3,7 +3,7 @@ set -euo pipefail
 
 source "${CLI_DIR}/core/helpers.sh"
 
-##? Find Git repositories with stashed changes.
+##? Find git repositories with stashed changes.
 ##?
 ##? Usage:
 ##?   git stashed-changes [<path>]
@@ -16,8 +16,8 @@ declare path
 
 path=${path:-.}
 
-echo_progress "Repositories with stashed changes:"
-find "$path" -type d -name ".git" | while read -r git_dir; do
+echo_gray "Repositories with stashed changes:"
+find "$path" -type d -name ".git" -print0 | while IFS= read -r -d $'\0' git_dir; do
   repo_dir=$(dirname "$git_dir")
   if git -C "$repo_dir" stash list | grep -q .; then
     echo "$repo_dir"

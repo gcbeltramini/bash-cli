@@ -341,6 +341,39 @@ EOF
 test__mycli_extract_arguments_with_descriptions() {
   local result expected
 
+  help_with_path_in_options=$(
+    cat <<-EOF
+List files or directories in a given path.
+
+Usage:
+  files ls (files | dirs) [<path>]
+  files ls -l [--short <path>]
+  files ls count-ext [--maxdepth=<d> <path>]
+
+Options:
+  <path>          Path to the directory to search for files [default: .]
+  files           List files in the directory
+  -l              Similar to 'ls -l', but with better formatting
+  --short         Select some columns for 'ls -l'
+  count-ext       Count the number of files with each extension; hidden files are ignored.
+  --maxdepth=<d>  Maximum depth to search for files when using 'count-ext' [default: 1]
+EOF
+  )
+
+  result=$(_mycli_extract_arguments_with_descriptions "$help_with_path_in_options" "files" "ls")
+  expected=$(
+    cat <<-EOF
+-l:Similar to 'ls -l', but with better formatting
+--short:Select some columns for 'ls -l'
+--maxdepth:Maximum depth to search for files when using 'count-ext' [default: 1]
+files:List files in the directory
+dirs:<no description>
+count-ext:Count the number of files with each extension; hidden files are ignored.
+--help:Show help message
+EOF
+  )
+  assertEquals "$expected" "$result"
+
   result=$(_mycli_extract_arguments_with_descriptions "$HELP_ZSH" "foo" "bar")
   expected=$(
     cat <<-EOF
@@ -415,6 +448,7 @@ EOF
 
   DOCOPT_OPTIONS=$(
     cat <<-EOF
+	<path>        Path to the directory to search for files [default: .]
 	command-x     Some X command
 	command_y     Some Y command
 	-h --help     Show this screen.

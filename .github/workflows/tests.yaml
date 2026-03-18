@@ -34,6 +34,9 @@ jobs:
         echo "---------------------------------- Install uv ----------------------------------"
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "--------------------------------------------------------------------------------"
+        # echo "-------------------------------- Install sponge --------------------------------"
+        # sudo apt-get update && sudo apt-get install -y moreutils
+        # echo "--------------------------------------------------------------------------------"
         echo
 
         # TODO: Run tests only for modified files

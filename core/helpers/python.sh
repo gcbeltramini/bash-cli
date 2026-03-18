@@ -22,3 +22,30 @@ run_python_script() {
 
   uv run "$python_script" "${script_args[@]}"
 }
+
+ipynb_cleanmetadata() {
+  # Clean cell-level metadata from Jupyter notebook files.
+  #
+  # Usage:
+  #   ipynb_cleanmetadata <file> [<output-file>]
+
+  if ! command_exists jq; then
+    exit_with_error "ipynb_cleanmetadata requires 'jq' to be installed. Please install 'jq' via your system package manager (e.g., 'apt-get install jq', 'brew install jq', or equivalent) and try again."
+  fi
+
+  local -r file="$1"
+  local -r output_file="${2:-$file}"
+
+  local -r output_dir=$(dirname -- "$output_file")
+  mkdir -p "$output_dir"
+
+  # Use a temporary file to avoid truncating the output on `jq` failure
+  local -r tmp_file="$(mktemp "${output_dir}/.ipynb_cleanmetadata.XXXXXX")"
+
+  if jq --indent 1 '.cells[].metadata = {}' "$file" >"$tmp_file"; then
+    mv "$tmp_file" "$output_file"
+  else
+    rm -f "$tmp_file"
+    return 1
+  fi
+}
