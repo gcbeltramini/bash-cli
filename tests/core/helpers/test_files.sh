@@ -71,6 +71,12 @@ test_has_exactly_one_line_at_the_end() {
 }
 
 test_yaml2json() {
+  # If we want to avoid the dependence on 'PyYAML', uncomment the lines below.
+  # if ! python -c 'import yaml' &>/dev/null; then
+  #   echo >&2 "Skipping 'test_yaml2json': PyYAML (python module 'yaml') is not installed."
+  #   return 0
+  # fi
+
   local result expected yaml_content
 
   yaml_content=$(
