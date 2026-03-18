@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: review autocomplete
-
 ##? List files or directories in a given path.
 ##?
 ##? Usage:
