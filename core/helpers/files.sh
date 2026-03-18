@@ -115,7 +115,7 @@ yaml2json() {
   #   yaml2json <file>
   local -r file=$1
 
-  if ! python3 -c 'import yamlx' &>/dev/null; then
+  if ! python3 -c 'import yaml' &>/dev/null; then
     exit_with_error "PyYAML is not installed (Python package \"yaml\"); cannot convert '$file' to JSON."
   fi
 
