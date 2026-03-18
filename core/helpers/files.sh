@@ -165,7 +165,7 @@ ls_dirs() {
   #   ls_dirs [<path>]
   local -r path_name=${1:-.}
   # shellcheck disable=SC2010
-  ls -l "$path_name" | grep '^d' --color=never
+  ls -l "$path_name" | grep '^d' --color=never || true
 }
 
 ll_full() {
