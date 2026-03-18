@@ -156,14 +156,15 @@ JSON
   assertEquals "$expected" "$result"
 
   # Writing to a separate output file leaves the input unchanged
-  local tmp_input tmp_output
-  tmp_input="$(mktemp /tmp/test-input-XXXXXX.ipynb)"
-  tmp_output="$(mktemp /tmp/test-output-XXXXXX.ipynb)"
+  local tmp_dir tmp_input tmp_output
+  tmp_dir="$(mktemp -d /tmp/test-ipynb-XXXXXX)"
+  tmp_input="$tmp_dir/test-input.ipynb"
+  tmp_output="$tmp_dir/test-output.ipynb"
   echo "$ipynb_content" >"$tmp_input"
   ipynb_cleanmetadata "$tmp_input" "$tmp_output"
   input_content=$(cat "$tmp_input")
   result=$(cat "$tmp_output")
-  rm -f "$tmp_input" "$tmp_output"
+  rm -rf "$tmp_dir"
   assertEquals "$input_content" "$ipynb_content"
   assertNotEquals "$input_content" "$result"
   assertEquals "$expected" "$result"
