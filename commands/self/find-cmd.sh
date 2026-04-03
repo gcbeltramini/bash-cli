@@ -18,7 +18,7 @@ commands="$(
   find "${CLI_DIR}/commands" -mindepth 2 -maxdepth 2 -type f -name '*.sh' | while read -r command_file; do
     cmd_subcommand=$(echo "$command_file" | awk -F/ '{print $(NF-1) " " $NF}' | sed 's/\.sh$//')
     description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
-    echo -e "$cmd_subcommand\t-- $description"
+    printf '%s\t-- %s\n' "$cmd_subcommand" "$description"
   done | sort
 )"
 
