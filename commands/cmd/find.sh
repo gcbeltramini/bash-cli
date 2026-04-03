@@ -13,4 +13,4 @@ source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare regex
 
-commands_find "$regex"
+shell_commands_find "$regex"

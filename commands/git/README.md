@@ -1,3 +1,3 @@
-# `tcli git`
+# `mycli git`
 
 Commands to interact with git and GitHub
