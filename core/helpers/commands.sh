@@ -35,5 +35,13 @@ shell_commands_find() {
   # - https://unix.stackexchange.com/a/127508
   # - https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
   local -r regex=${1:-}
-  compgen -abck -A function | { grep -e "$regex" || true; } | LC_ALL=C sort -u
+  compgen -abck -A function | {
+    grep -e "$regex" || {
+      local -r status=$?
+      if [[ $status -ne 1 ]]; then
+        return "$status"
+      fi
+      return 0
+    }
+  } | LC_ALL=C sort -u
 }
