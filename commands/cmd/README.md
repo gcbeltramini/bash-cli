@@ -1,3 +1,3 @@
 # `mycli cmd`
 
-Deal with commands
+Deal with shell commands
