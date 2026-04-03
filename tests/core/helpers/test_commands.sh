@@ -24,6 +24,12 @@ test_shell_commands_find() {
   # Returns empty for a non-existent command
   result=$(shell_commands_find 'this-command-xyz-doesnt-exist-123abc')
   assertEquals "" "$result"
+
+  # Invalid regex should result in a non-zero exit status (>1)
+  shell_commands_find '[invalid-regex' 2>/dev/null
+  local status=$?
+  # grep returns 2 for invalid regex, so status should be >1
+  assertTrue "shell_commands_find should fail for invalid regex (exit status > 1), got $status" "[ $status -gt 1 ]"
 }
 
 oneTimeSetUp() {
