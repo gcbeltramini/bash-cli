@@ -22,7 +22,7 @@ test_shell_commands_find() {
   assertEquals "shell_commands_find" "$result"
 
   # Returns empty for a non-existent command
-  result=$(shell_commands_find 'this-command-xyz-doesnt-exist-123abc' || true)
+  result=$(shell_commands_find 'this-command-xyz-doesnt-exist-123abc')
   assertEquals "" "$result"
 }
 
