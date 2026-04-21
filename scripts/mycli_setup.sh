@@ -113,6 +113,14 @@ show_section "Make the required scripts executable"
 make_executable "$cli_dir"
 show_done
 
+# Generate the command index
+# --------------------------------------------------------------------------------------------------
+
+show_section "Generate the command index"
+bash "${cli_dir}/scripts/generate_command_index.sh"
+show_done
+
+
 # Last message
 # --------------------------------------------------------------------------------------------------
 

@@ -2,6 +2,8 @@
 set -euo pipefail
 
 # Helper functions used by the CLI directly, and only by the CLI. No command should use these functions.
+# shellcheck disable=SC2153 # 'CLI_DIR' is defined in 'mycli'
+source "${CLI_DIR}/core/cli_root/command_index.sh"
 
 run_command() {
   # Run CLI command.
@@ -44,11 +46,7 @@ run_command() {
   fi
 
   local -r commands_dir="${CLI_DIR}/commands"
-  local -r command_path=$(find "$commands_dir" \
-    -type f \
-    -maxdepth 2 \
-    -path "${commands_dir}/${cmd1}*/*" \
-    -name "${cmd2}*.sh")
+  local -r command_path=$(mycli_find_command_paths "$commands_dir" "$cmd1" "$cmd2")
 
   local -r no_color='\x1b[0m'
   local -r color_red='\x1b[31m'
@@ -105,14 +103,7 @@ list_commands() {
     echo "Available commands"
     echo "------------------"
     {
-      find "$commands_dir" -mindepth 2 -maxdepth 2 -type f -name "*.sh" | while read -r command_file; do
-        cmd_subcommand=$(echo "$command_file" | awk -F/ '{print $(NF-1) " " $NF}' | sed 's/\.sh$//')
-        # first line starting with "##?":
-        description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
-        echo -e "$cmd_subcommand\t-- $description"
-      done
-      echo -e "update\t-- $update_description"
-      echo -e "version\t-- $version_description"
+      mycli_list_commands_for_help "$commands_dir"
     } | sort | column -t -s $'\t'
   else
     if [[ $cmd == "update" ]]; then
@@ -136,17 +127,7 @@ EOF
     echo "Available commands for '$cmd'"
     local -r dashes=$(printf '%*s' "${#cmd}" '' | tr ' ' '-')
     echo "-------------------------${dashes}"
-    find "$commands_dir" \
-      -mindepth 2 \
-      -maxdepth 2 \
-      -type f \
-      -path "${commands_dir}/${cmd}*/*" \
-      -name "*.sh" | while read -r command_file; do
-      subcommand=$(echo "$command_file" | awk -F/ '{print $NF}' | sed 's/\.sh$//')
-      # first line starting with "##?":
-      description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
-      echo -e "$subcommand\t-- $description"
-    done | sort | column -t -s $'\t'
+    mycli_list_subcommands_for_help "$commands_dir" "$cmd" | sort | column -t -s $'\t'
   fi
 }
 

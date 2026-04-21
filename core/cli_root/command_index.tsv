@@ -1,0 +1,19 @@
+cmd	find	commands/cmd/find.sh	Find commands.	Deal with shell commands
+files	empty-dirs	commands/files/empty-dirs.sh	Find empty directories.	Deal with files
+files	empty-files	commands/files/empty-files.sh	Find empty files.	Deal with files
+files	end-of-line	commands/files/end-of-line.sh	Display files that don't have exactly one empty line at the end.	Deal with files
+files	ls	commands/files/ls.sh	List files or directories in a given path.	Deal with files
+git	clone	commands/git/clone.sh	Clone GitHub repository.	Commands to interact with git and GitHub
+git	local-branches	commands/git/local-branches.sh	Find git repositories with local branches.	Commands to interact with git and GitHub
+git	local-changes	commands/git/local-changes.sh	Find git repositories with uncommitted changes.	Commands to interact with git and GitHub
+git	stashed-changes	commands/git/stashed-changes.sh	Find git repositories with stashed changes.	Commands to interact with git and GitHub
+git	trigger	commands/git/trigger.sh	Trigger continuous integration (CI) on GitHub repository, such as GitHub Action.	Commands to interact with git and GitHub
+hello	python-script	commands/hello/python-script.sh	Run Python script.	Commands used to test the CLI
+hello	world	commands/hello/world.sh	Show hello world message.	Commands used to test the CLI
+python	jupyter	commands/python/jupyter.sh	Clean cell metadata from Jupyter notebook files.	Python commands
+python	setup	commands/python/setup.sh	Set up Python on your computer.	Python commands
+self	find-cmd	commands/self/find-cmd.sh	Find mycli commands.	Commands related to 'mycli'
+setup	java	commands/setup/java.sh	Set up Java on your computer.	Automate setup tasks and ensure your environment is ready for development
+setup	update	commands/setup/update.sh	Update Homebrew and conda packages.	Automate setup tasks and ensure your environment is ready for development
+update		core/cli_root/update.sh	Update the CLI.	Update mycli
+version		core/cli_root/version.sh	Show the CLI version.	Show mycli version
