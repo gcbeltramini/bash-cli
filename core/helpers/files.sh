@@ -186,7 +186,13 @@ delete_empty_dirs() {
   #   delete_empty_dirs [<path>]
   local -r path=${1:-.}
 
-  find_empty_dirs "$path" | xargs -r rm -rf
+  # The paths must be consistent with `find_empty_dirs`.
+  find "$path" \
+    -type d \
+    -empty \
+    -not -path '*/.git/*' \
+    -not -path '*/node_modules/*' \
+    -exec rm -rf {} +
 }
 
 # List
