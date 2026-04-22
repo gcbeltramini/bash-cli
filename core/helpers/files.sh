@@ -188,11 +188,12 @@ delete_empty_dirs() {
 
   # The paths must be consistent with `find_empty_dirs`.
   find "$path" \
+    -mindepth 1 \
     -type d \
     -empty \
     -not -path '*/.git/*' \
     -not -path '*/node_modules/*' \
-    -exec rm -rf {} +
+    -exec rm -rf -- {} +
 }
 
 # List
