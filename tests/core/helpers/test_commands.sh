@@ -24,6 +24,9 @@ test_shell_commands_find() {
   # Returns empty for a non-existent command
   result=$(shell_commands_find 'this-command-xyz-doesnt-exist-123abc')
   assertEquals "" "$result"
+
+  # Invalid regex should fail (grep returns error for malformed pattern)
+  assertFalse 'shell_commands_find "[" &>/dev/null'
 }
 
 oneTimeSetUp() {
