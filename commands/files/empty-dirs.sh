@@ -18,7 +18,7 @@ path=${path:-.}
 msg_color="gray"
 
 echo_color >&2 "$msg_color" "Empty directories in '$path':"
-find "$path" -type d -empty
+find_empty_dirs "$path"
 
 if $a; then
   echo_color >&2 "$msg_color" "Directories in '$path' that contain only hidden files and directories:"

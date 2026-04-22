@@ -20,6 +20,26 @@ backup_if_exists() {
 # Files
 # ------------------------------------------------------------------------------
 
+check_if_file_exists() {
+  # Check if a file exists.
+  #
+  # Usage:
+  #   check_if_file_exists <file>
+  local -r file=$1
+  if [[ ! -e $file ]]; then
+    exit_with_error "File '$file' not found."
+  fi
+}
+
+file_to_base64() {
+  # Convert a file to base64.
+  #
+  # Usage:
+  #   file_to_base64 <file>
+  local -r file=$1
+  base64 -w 0 "$file"
+}
+
 find_relevant_files() {
   # List relevant files.
   #
@@ -135,14 +155,38 @@ find_dirs_with_only_hidden_files() {
   local -r path=$1
 
   find "$path" -type d -exec bash -c '
-      files=$(ls -A "$1" 2>/dev/null)
-      if [[ -n "$files" ]]; then
-        hidden_files=$(ls -A "$1" 2>/dev/null | grep "^\.")
-        if [[ "$files" == "$hidden_files" ]]; then
-          echo "$1"
-        fi
+    files=$(ls -A "$1" 2>/dev/null)
+    if [[ -n "$files" ]]; then
+      hidden_files=$(ls -A "$1" 2>/dev/null | grep "^\.")
+      if [[ "$files" == "$hidden_files" ]]; then
+        echo "$1"
       fi
-    ' _ {} \;
+    fi
+  ' _ {} \;
+}
+
+find_empty_dirs() {
+  # Find empty directories.
+  #
+  # Usage:
+  #   find_empty_dirs [<path>]
+  local -r path=${1:-.}
+
+  find "$path" \
+    -type d \
+    -empty \
+    -not -path '*/.git/*' \
+    -not -path '*/node_modules/*'
+}
+
+delete_empty_dirs() {
+  # Delete empty directories.
+  #
+  # Usage:
+  #   delete_empty_dirs [<path>]
+  local -r path=${1:-.}
+
+  find_empty_dirs "$path" | xargs -r rm -rf
 }
 
 # List
