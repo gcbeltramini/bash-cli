@@ -14,7 +14,7 @@ set -euo pipefail
 ##?   clean-metadata    Clean cell-level metadata from Jupyter notebook files
 ##?   <path>            Path to use [default: "."]
 ##?   --maxdepth=DEPTH  Maximum depth to search for Jupyter notebooks. The default is unlimited.
-##?   --force           Force the deletion of the Python venv
+##?   --force           Skip the confirmation prompt when clearing notebook outputs
 
 source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
@@ -40,7 +40,7 @@ elif $clear; then
   if ! $force; then
     confirm "The outputs of all Jupyter notebooks in '$path' and subfolders will be cleared. Do you want to continue?"
   fi
-  # There could be Jupyter notebooks inside to venvs. Let's remove their outputs as well.
+  # There could be Jupyter notebooks inside venvs, and we will remove their outputs as well.
   find "$path" \
     "${maxdepth_arg[@]}" \
     -type f \
@@ -54,7 +54,6 @@ elif $clear; then
 elif $clean_metadata; then
   ipynb_cleanmetadata "$file" "${output_file:-$file}"
   echo_gray "Metadata cleaned from '$file' (output: '${output_file:-$file}')"
-  echo_done
 fi
 
 echo_done

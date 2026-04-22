@@ -37,7 +37,7 @@ file_to_base64() {
   # Usage:
   #   file_to_base64 <file>
   local -r file=$1
-  base64 -w 0 "$file"
+  base64 -w 0 "$file" # '-w' is a GNU-specific flag, i.e., only works with 'gbase64'
 }
 
 find_relevant_files() {
