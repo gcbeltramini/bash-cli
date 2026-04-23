@@ -9,7 +9,7 @@ test_use_gnu_tool() {
   gfoo() { echo "$function_return"; }
 
   unset -f foo 2>/dev/null
-  use_gnu_tool 'gfoo' # will define the function "foo"
+  use_gnu_tool 'gfoo' # will define the function "foo" from "gfoo"
   result=$(foo)
 
   assertEquals "$function_return" "$result"
@@ -18,14 +18,13 @@ test_use_gnu_tool() {
 test_use_all_gnu_tools() {
   local function_return result
 
-  # Guarantee that the function 'gdate' is defined
   function_return="dummy function"
   # shellcheck disable=SC2317,SC2329
-  gdate() { echo "$function_return"; }
+  g__mycli_test_dummy_function() { echo "$function_return"; }
 
-  unset -f date 2>/dev/null
-  use_all_gnu_tools # will define 'date' as 'gdate' (among many other functions, if they exist)
-  result=$(date)
+  unset -f __mycli_test_dummy_function 2>/dev/null
+  use_all_gnu_tools # will define '__mycli_test_dummy_function' as 'g__mycli_test_dummy_function' (among many other functions, if they exist)
+  result=$(__mycli_test_dummy_function)
 
   assertEquals "$function_return" "$result"
 }

@@ -120,7 +120,8 @@ echo_success() {
 }
 
 echo_gray() {
-  # Show message in gray, usually for less important information or to indicate that something is in progress.
+  # Show message in gray, usually for less important information or to indicate that something is in
+  # progress.
   #
   # Usage:
   #   echo_gray <text>

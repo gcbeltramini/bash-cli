@@ -4,6 +4,8 @@ set -euo pipefail
 use_gnu_tool() {
   # Define a function that calls the GNU version of the command, if it exists.
   #
+  # For example, if 'gdate' exists, it will define the function 'date', which calls 'gdate'.
+  #
   # Usage:
   #   use_gnu_tool <gnu_command_name>
   local -r gnu_cmd=$1
@@ -19,8 +21,13 @@ use_all_gnu_tools() {
   #
   # Usage:
   #   use_all_gnu_tools
+  #
+  # See also:
+  #   use_gnu_tool
 
   local -r gnu_commands=(
+    g__mycli_test_dummy_function # for testing purposes, to be used in "test_use_all_gnu_tools"
+
     # coreutils (in "$(brew --prefix)/Cellar/coreutils/"*"/bin/g"*):
     # "g[" # fails in 'use_gnu_tool', but we can use "gtest" instead, if necessary
     gb2sum
