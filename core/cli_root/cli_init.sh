@@ -147,7 +147,7 @@ EOF
   fi
 
   # Find matching command directories
-  local -r matching_dirs=$(find "$commands_dir" -maxdepth 1 -type d -name "${cmd}*" 2>/dev/null)
+  local -r matching_dirs=$(find "$commands_dir" -mindepth 1 -maxdepth 1 -type d -name "${cmd}*" 2>/dev/null)
   local -r matching_count=$(echo "$matching_dirs" | wc -l | awk '{print $1}')
   local -r matching_dir_exact=$(echo "$matching_dirs" | grep "/${cmd}$" || :)
 
