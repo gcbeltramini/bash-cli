@@ -165,10 +165,18 @@ EOF
       basename "$dir"
     done | sort >&2
     return 1
+  elif [[ -n $matching_dir_exact ]]; then
+    local -r selected_dir=$matching_dir_exact
+  elif [[ $matching_count -eq 1 ]]; then
+    local -r selected_dir=$matching_dirs
+  else
+    # This should not happen, but just in case
+    print_error "An unexpected error occurred while listing commands. Matching directories: $matching_dirs"
+    return 1
   fi
 
   # Exactly one matching command directory - get the full command name
-  local -r full_cmd=$(basename "$matching_dirs")
+  local -r full_cmd=$(basename "$selected_dir")
 
   echo "Available commands for '$full_cmd'"
   local -r dashes=$(printf '%*s' "${#full_cmd}" '' | tr ' ' '-')
