@@ -3,6 +3,17 @@ set -euo pipefail
 
 # Helper functions used by the CLI directly, and only by the CLI. No command should use these functions.
 
+print_error() {
+  # Print an error message in red.
+  #
+  # Usage:
+  #   print_error <message>
+  local -r message=$1
+  local -r no_color='\x1b[0m'
+  local -r color_red='\x1b[31m'
+  printf >&2 '%bERROR:%b %s\n' "$color_red" "$no_color" "$message"
+}
+
 run_command() {
   # Run CLI command.
   #
@@ -51,13 +62,12 @@ run_command() {
     -name "${cmd2}*.sh")
 
   local -r no_color='\x1b[0m'
-  local -r color_red='\x1b[31m'
   local -r color_blue='\x1b[34m'
 
   if [[ -z $command_path ]]; then
     # The command was not found.
     local -r asterisk="${color_blue}*${no_color}"
-    echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to find the command '${cmd1} ${cmd2}'."
+    print_error "It was not possible to find the command '${cmd1} ${cmd2}'."
     echo >&2 -e "       Make sure that the following path exists:"
     echo >&2 -e "         '${commands_dir}/${cmd1}${asterisk}/${cmd2}${asterisk}.sh'"
     echo >&2 -e "       ('${asterisk}' denotes 0 or more characters in the path above)"
@@ -69,15 +79,15 @@ run_command() {
     "$command_path" "${cmd_args[@]}"
   else
     # More than one command was found.
-    local -r command_path_exact=$(echo "$command_path" | grep "${cmd2}.sh$")
+    local -r command_path_exact=$(echo "$command_path" | grep "${cmd2}.sh$" || :)
     if [[ -n $command_path_exact ]]; then # 'cmd2' is a substring of another command, but it's an exact match of an existing command
       # Example: 'git check' and 'git checkout' (cm1='git', cmd='check')
       "$command_path_exact" "${cmd_args[@]}"
     else
-      echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to distinguish the commands."
+      print_error "It was not possible to distinguish the commands."
       echo >&2
-      echo >&2 "Ambiguous commands"
-      echo >&2 "------------------"
+      echo >&2 "Multiple matches found"
+      echo >&2 "----------------------"
       echo "$command_path" |
         sed "s:${commands_dir}/:: ; s:\.sh$::" |
         tr '/' ' ' |
@@ -102,6 +112,7 @@ list_commands() {
   local -r version_description="Show the CLI version."
 
   if [[ -z $cmd ]]; then
+    # No command specified - list all commands
     echo "Available commands"
     echo "------------------"
     {
@@ -114,40 +125,74 @@ list_commands() {
       echo -e "update\t-- $update_description"
       echo -e "version\t-- $version_description"
     } | sort | column -t -s $'\t'
-  else
-    if [[ $cmd == "update" ]]; then
-      cat <<-EOF
-	$update_description
-
-	Usage:
-	  mycli update
-EOF
-      return 0
-    elif [[ $cmd == "version" ]]; then
-      cat <<-EOF
-	$version_description
-
-	Usage:
-	  mycli version
-EOF
-      return 0
-    fi
-
-    echo "Available commands for '$cmd'"
-    local -r dashes=$(printf '%*s' "${#cmd}" '' | tr ' ' '-')
-    echo "-------------------------${dashes}"
-    find "$commands_dir" \
-      -mindepth 2 \
-      -maxdepth 2 \
-      -type f \
-      -path "${commands_dir}/${cmd}*/*" \
-      -name "*.sh" | while read -r command_file; do
-      subcommand=$(echo "$command_file" | awk -F/ '{print $NF}' | sed 's/\.sh$//')
-      # first line starting with "##?":
-      description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
-      echo -e "$subcommand\t-- $description"
-    done | sort | column -t -s $'\t'
+    return 0
   fi
+
+  if [[ $cmd == "update" ]]; then
+    cat <<-EOF
+$update_description
+
+Usage:
+  mycli update
+EOF
+    return 0
+  elif [[ $cmd == "version" ]]; then
+    cat <<-EOF
+$version_description
+
+Usage:
+  mycli version
+EOF
+    return 0
+  fi
+
+  # Find matching command directories
+  local -r matching_dirs=$(find "$commands_dir" -mindepth 1 -maxdepth 1 -type d -name "${cmd}*" 2>/dev/null)
+  local -r matching_count=$(echo "$matching_dirs" | wc -l | awk '{print $1}')
+  local -r matching_dir_exact=$(echo "$matching_dirs" | grep "/${cmd}$" || :)
+
+  if [[ $matching_count -eq 0 || -z $matching_dirs ]]; then
+    # No matching command
+    print_error "Command '$cmd' not found."
+    return 1
+  elif [[ $matching_count -gt 1 && -z $matching_dir_exact ]]; then
+    # Multiple matching commands
+    print_error "It was not possible to distinguish the commands."
+    echo >&2
+    echo >&2 "Multiple matches found"
+    echo >&2 "----------------------"
+    echo "$matching_dirs" | while read -r dir; do
+      basename "$dir"
+    done | sort >&2
+    return 1
+  elif [[ -n $matching_dir_exact ]]; then
+    local -r selected_dir=$matching_dir_exact
+  elif [[ $matching_count -eq 1 ]]; then
+    local -r selected_dir=$matching_dirs
+  else
+    # This should not happen, but just in case
+    print_error "An unexpected error occurred while listing commands. Matching directories: $matching_dirs"
+    return 1
+  fi
+
+  # Exactly one matching command directory - get the full command name
+  local -r full_cmd=$(basename "$selected_dir")
+
+  echo "Available commands for '$full_cmd'"
+  local -r dashes=$(printf '%*s' "${#full_cmd}" '' | tr ' ' '-')
+  echo "-------------------------${dashes}"
+  local subcommand description
+  find "$commands_dir" \
+    -mindepth 2 \
+    -maxdepth 2 \
+    -type f \
+    -path "${commands_dir}/${full_cmd}/*" \
+    -name "*.sh" | while read -r command_file; do
+    subcommand=$(echo "$command_file" | awk -F/ '{print $NF}' | sed 's/\.sh$//')
+    # first line starting with "##?":
+    description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
+    echo -e "$subcommand\t-- $description"
+  done | sort | column -t -s $'\t'
 }
 
 show_cli_help() {

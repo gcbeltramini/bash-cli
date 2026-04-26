@@ -42,7 +42,7 @@ ipynb_cleanmetadata() {
   # Use a temporary file to avoid truncating the output on `jq` failure
   local -r tmp_file="$(mktemp "${output_dir}/.ipynb_cleanmetadata.XXXXXX")"
 
-  if jq --indent 1 '.cells[].metadata = {}' "$file" >"$tmp_file"; then
+  if jq --indent 1 '.cells |= map(.metadata = {})' "$file" >"$tmp_file"; then
     mv "$tmp_file" "$output_file"
   else
     rm -f "$tmp_file"

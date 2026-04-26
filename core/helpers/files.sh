@@ -137,6 +137,7 @@ yaml2json() {
 
   if ! python3 -c 'import yaml' &>/dev/null; then
     exit_with_error "PyYAML is not installed (Python package \"yaml\"); cannot convert '$file' to JSON."
+    return 1 # just in case 'exit_with_error' does not exit the script
   fi
 
   local -r code='import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout, indent=2)'
