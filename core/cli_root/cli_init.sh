@@ -86,8 +86,8 @@ run_command() {
     else
       print_error "It was not possible to distinguish the commands."
       echo >&2
-      echo >&2 "Ambiguous commands"
-      echo >&2 "------------------"
+      echo >&2 "Multiple matches found"
+      echo >&2 "----------------------"
       echo "$command_path" |
         sed "s:${commands_dir}/:: ; s:\.sh$::" |
         tr '/' ' ' |
@@ -112,6 +112,7 @@ list_commands() {
   local -r version_description="Show the CLI version."
 
   if [[ -z $cmd ]]; then
+    # No command specified - list all commands
     echo "Available commands"
     echo "------------------"
     {
