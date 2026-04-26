@@ -143,24 +143,47 @@ $version_description
 Usage:
   mycli version
 EOF
-      return 0
-    fi
-
-    echo "Available commands for '$cmd'"
-    local -r dashes=$(printf '%*s' "${#cmd}" '' | tr ' ' '-')
-    echo "-------------------------${dashes}"
-    find "$commands_dir" \
-      -mindepth 2 \
-      -maxdepth 2 \
-      -type f \
-      -path "${commands_dir}/${cmd}*/*" \
-      -name "*.sh" | while read -r command_file; do
-      subcommand=$(echo "$command_file" | awk -F/ '{print $NF}' | sed 's/\.sh$//')
-      # first line starting with "##?":
-      description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
-      echo -e "$subcommand\t-- $description"
-    done | sort | column -t -s $'\t'
+    return 0
   fi
+
+  # Find matching command directories
+  local -r matching_dirs=$(find "$commands_dir" -maxdepth 1 -type d -name "${cmd}*" 2>/dev/null)
+  local -r matching_count=$(echo "$matching_dirs" | wc -l | awk '{print $1}')
+  local -r matching_dir_exact=$(echo "$matching_dirs" | grep "/${cmd}$" || :)
+
+  if [[ $matching_count -eq 0 || -z $matching_dirs ]]; then
+    # No matching command
+    print_error "Command '$cmd' not found."
+    return 1
+  elif [[ $matching_count -gt 1 && -z $matching_dir_exact ]]; then
+    # Multiple matching commands
+    print_error "It was not possible to distinguish the commands."
+    echo >&2
+    echo >&2 "Multiple matches found"
+    echo >&2 "----------------------"
+    echo "$matching_dirs" | while read -r dir; do
+      basename "$dir"
+    done | sort >&2
+    return 1
+  fi
+
+  # Exactly one matching command directory - get the full command name
+  local -r full_cmd=$(basename "$matching_dirs")
+
+  echo "Available commands for '$full_cmd'"
+  local -r dashes=$(printf '%*s' "${#full_cmd}" '' | tr ' ' '-')
+  echo "-------------------------${dashes}"
+  find "$commands_dir" \
+    -mindepth 2 \
+    -maxdepth 2 \
+    -type f \
+    -path "${commands_dir}/${full_cmd}/*" \
+    -name "*.sh" | while read -r command_file; do
+    subcommand=$(echo "$command_file" | awk -F/ '{print $NF}' | sed 's/\.sh$//')
+    # first line starting with "##?":
+    description=$(grep -m 1 '^##?' "$command_file" | sed 's/^##? *//')
+    echo -e "$subcommand\t-- $description"
+  done | sort | column -t -s $'\t'
 }
 
 show_cli_help() {
