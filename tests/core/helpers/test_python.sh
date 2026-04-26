@@ -171,7 +171,7 @@ JSON
 
   # Empty cells array still produces a valid top-level notebook object
   local empty_ipynb_content empty_expected
-  tmp_file=$(mktemp /tmp/test-ipynb-XXXXXX)
+  tmp_file="$(mktemp /tmp/test-ipynb-XXXXXX)"
   empty_ipynb_content=$(
     cat <<'JSON'
 {
