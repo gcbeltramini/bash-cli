@@ -168,6 +168,35 @@ JSON
   assertEquals "$input_content" "$ipynb_content"
   assertNotEquals "$input_content" "$result"
   assertEquals "$expected" "$result"
+
+  # Empty cells array still produces a valid top-level notebook object
+  local empty_ipynb_content empty_expected
+  tmp_file=$(mktemp /tmp/test-ipynb-XXXXXX)
+  empty_ipynb_content=$(
+    cat <<'JSON'
+{
+ "cells": [],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
+JSON
+  )
+  empty_expected=$(
+    cat <<'JSON'
+{
+ "cells": [],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
+JSON
+  )
+  echo "$empty_ipynb_content" >"$tmp_file"
+  ipynb_cleanmetadata "$tmp_file"
+  result=$(cat "$tmp_file")
+  rm -f "$tmp_file"
+  assertEquals "$empty_expected" "$result"
 }
 
 oneTimeSetUp() {
