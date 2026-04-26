@@ -11,7 +11,7 @@ print_error() {
   local -r message=$1
   local -r no_color='\x1b[0m'
   local -r color_red='\x1b[31m'
-  echo >&2 -e "${color_red}ERROR:${no_color} ${message}"
+  printf >&2 '%bERROR:%b %s\n' "$color_red" "$no_color" "$message"
 }
 
 run_command() {
