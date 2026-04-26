@@ -339,7 +339,7 @@ EOF
 }
 
 test__mycli_extract_arguments_with_descriptions() {
-  local result expected
+  local result expected help_with_path_in_options
 
   help_with_path_in_options=$(
     cat <<-EOF
