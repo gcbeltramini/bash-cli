@@ -181,6 +181,7 @@ EOF
   echo "Available commands for '$full_cmd'"
   local -r dashes=$(printf '%*s' "${#full_cmd}" '' | tr ' ' '-')
   echo "-------------------------${dashes}"
+  local subcommand description
   find "$commands_dir" \
     -mindepth 2 \
     -maxdepth 2 \
