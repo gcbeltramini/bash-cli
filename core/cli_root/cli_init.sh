@@ -125,21 +125,23 @@ list_commands() {
       echo -e "update\t-- $update_description"
       echo -e "version\t-- $version_description"
     } | sort | column -t -s $'\t'
-  else
-    if [[ $cmd == "update" ]]; then
-      cat <<-EOF
-	$update_description
+    return 0
+  fi
 
-	Usage:
-	  mycli update
+  if [[ $cmd == "update" ]]; then
+    cat <<-EOF
+$update_description
+
+Usage:
+  mycli update
 EOF
-      return 0
-    elif [[ $cmd == "version" ]]; then
-      cat <<-EOF
-	$version_description
+    return 0
+  elif [[ $cmd == "version" ]]; then
+    cat <<-EOF
+$version_description
 
-	Usage:
-	  mycli version
+Usage:
+  mycli version
 EOF
       return 0
     fi
