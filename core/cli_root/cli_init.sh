@@ -3,6 +3,17 @@ set -euo pipefail
 
 # Helper functions used by the CLI directly, and only by the CLI. No command should use these functions.
 
+print_error() {
+  # Print an error message in red.
+  #
+  # Usage:
+  #   print_error <message>
+  local -r message=$1
+  local -r no_color='\x1b[0m'
+  local -r color_red='\x1b[31m'
+  echo >&2 -e "${color_red}ERROR:${no_color} ${message}"
+}
+
 run_command() {
   # Run CLI command.
   #
@@ -51,13 +62,12 @@ run_command() {
     -name "${cmd2}*.sh")
 
   local -r no_color='\x1b[0m'
-  local -r color_red='\x1b[31m'
   local -r color_blue='\x1b[34m'
 
   if [[ -z $command_path ]]; then
     # The command was not found.
     local -r asterisk="${color_blue}*${no_color}"
-    echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to find the command '${cmd1} ${cmd2}'."
+    print_error "It was not possible to find the command '${cmd1} ${cmd2}'."
     echo >&2 -e "       Make sure that the following path exists:"
     echo >&2 -e "         '${commands_dir}/${cmd1}${asterisk}/${cmd2}${asterisk}.sh'"
     echo >&2 -e "       ('${asterisk}' denotes 0 or more characters in the path above)"
@@ -74,7 +84,7 @@ run_command() {
       # Example: 'git check' and 'git checkout' (cm1='git', cmd='check')
       "$command_path_exact" "${cmd_args[@]}"
     else
-      echo >&2 -e "${color_red}ERROR:${no_color} It was not possible to distinguish the commands."
+      print_error "It was not possible to distinguish the commands."
       echo >&2
       echo >&2 "Ambiguous commands"
       echo >&2 "------------------"
