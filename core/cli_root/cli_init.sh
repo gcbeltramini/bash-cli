@@ -91,7 +91,7 @@ run_command() {
       echo "$command_path" |
         sed "s:${commands_dir}/:: ; s:\.sh$::" |
         tr '/' ' ' |
-        sort
+        sort >&2
       exit 1
     fi
   fi
