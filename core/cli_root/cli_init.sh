@@ -79,7 +79,7 @@ run_command() {
     "$command_path" "${cmd_args[@]}"
   else
     # More than one command was found.
-    local -r command_path_exact=$(echo "$command_path" | grep "${cmd2}.sh$" || :)
+    local -r command_path_exact=$(echo "$command_path" | awk -F/ -v target="${cmd2}.sh" '$NF == target' || :)
     if [[ -n $command_path_exact ]]; then # 'cmd2' is a substring of another command, but it's an exact match of an existing command
       # Example: 'git check' and 'git checkout' (cm1='git', cmd='check')
       "$command_path_exact" "${cmd_args[@]}"
@@ -91,7 +91,7 @@ run_command() {
       echo "$command_path" |
         sed "s:${commands_dir}/:: ; s:\.sh$::" |
         tr '/' ' ' |
-        sort
+        sort >&2
       exit 1
     fi
   fi
@@ -149,7 +149,7 @@ EOF
   # Find matching command directories
   local -r matching_dirs=$(find "$commands_dir" -mindepth 1 -maxdepth 1 -type d -name "${cmd}*" 2>/dev/null)
   local -r matching_count=$(echo "$matching_dirs" | wc -l | awk '{print $1}')
-  local -r matching_dir_exact=$(echo "$matching_dirs" | grep "/${cmd}$" || :)
+  local -r matching_dir_exact=$(echo "$matching_dirs" | grep -Fx -- "${commands_dir}/${cmd}" || :)
 
   if [[ $matching_count -eq 0 || -z $matching_dirs ]]; then
     # No matching command
