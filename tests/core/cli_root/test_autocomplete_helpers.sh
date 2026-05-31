@@ -110,6 +110,16 @@ EOF
   )
   assertEquals "$expected" "$result"
 
+  # Parenthesized option groups should not leak parentheses into parameter names.
+  result=$(_mycli_extract_parameters "foo bar baz (--name=NAME | --id=ID)")
+  expected=$(
+    cat <<-EOF
+	--name
+	--id
+EOF
+  )
+  assertEquals "$expected" "$result"
+
   # Concatenating the usage line and the "Options" section
   result=$(_mycli_extract_parameters "$(echo -e "foo bar --foo Options:\n--bar  Some description\n-f, --foo")")
   expected=$(
@@ -259,6 +269,10 @@ test__mycli_get_arg_description() {
   assertEquals "$expected" "$result"
 
   result=$(_mycli_get_arg_description "--my" "$DOCOPT_OPTIONS" "$PARAMETER_NAMES_IN_OPTIONS")
+  expected=""
+  assertEquals "$expected" "$result"
+
+  result=$(_mycli_get_arg_description "(--my" "$DOCOPT_OPTIONS" "$PARAMETER_NAMES_IN_OPTIONS")
   expected=""
   assertEquals "$expected" "$result"
 

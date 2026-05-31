@@ -86,16 +86,13 @@ _mycli_extract_parameters() {
   #   _mycli_extract_parameters "$usage" # --> "--foo --help --some-flag"
   local -r usage=$1
 
-  # Extract the parameters that:
-  # - start with a dash ("-")
-  # - are not preceded by any of "[a-zA-Z0-9_<" ("[" must appear in the beginning of the negation "[^...]")
-  # - end before any of "] =,": "--foo --foo=42 --bar]" or "-f, --foo" (only appears in the options)
-  # - exclude the 'parameter' "--"
+  # Normalize separators used in docopt alternatives/groups, split by whitespace, then extract
+  # option-like tokens while ignoring plain words that contain dashes (for example: "some-command").
   echo "$usage" |
-    sed 's/^/ /' |
-    grep -oE -- '[^[a-zA-Z0-9_<]-[^] =,]+' |
-    sed 's/^[[:space:]]*//' |
-    grep -vE '^--$' || :
+    tr '()|' '   ' |
+    tr -s '[:space:]' '\n' |
+    sed -E 's/^\[+// ; s/[=,].*$// ; s/\]+$//' |
+    grep -E -- '^--?[[:alnum:]_][[:alnum:]_-]*$' || :
 }
 
 _mycli_extract_additional_commands() {
@@ -260,7 +257,10 @@ _mycli_get_arg_description() {
   # the function `_mycli_extract_parameter_names`.
   local -r docopt_options_first_lines=$(sed -E '/^[[:space:]]{6,}/d' <<<"$docopt_options")
 
-  if line_number=$(grep -nE -- "(^| )$arg( |$)" <<<"$parameter_names_in_options" | cut -d: -f1); then
+  # Use exact token matching instead of regex so arguments containing regex characters
+  # never trigger parsing errors (for example: "(--my").
+  line_number=$(awk -v needle="$arg" '{for (i = 1; i <= NF; i++) if ($i == needle) {print NR; exit}}' <<<"$parameter_names_in_options")
+  if [[ -n "$line_number" ]]; then
     sed -n "${line_number}p" <<<"$docopt_options_first_lines" |
       sed 's/^[[:space:]]*//' |
       grep -Eo ' {2,}.*' |
