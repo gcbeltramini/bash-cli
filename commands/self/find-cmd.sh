@@ -14,6 +14,20 @@ source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare command subcommand
 
+echo_gray "Finding commands that match the following filters..."
+
+if [[ -n "$command" ]]; then
+  echo_gray "- Command regex: $command"
+else
+  echo_gray "- Command regex: none (all commands)"
+fi
+
+if [[ -n "$subcommand" ]]; then
+  echo_gray "- Subcommand regex: $subcommand"
+else
+  echo_gray "- Subcommand regex: none (all subcommands)"
+fi
+
 commands="$(
   find "${CLI_DIR}/commands" -mindepth 2 -maxdepth 2 -type f -name '*.sh' | while read -r command_file; do
     cmd_subcommand=$(echo "$command_file" | awk -F/ '{print $(NF-1) " " $NF}' | sed 's/\.sh$//')
