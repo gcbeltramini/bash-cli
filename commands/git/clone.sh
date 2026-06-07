@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${CLI_DIR}/core/helpers.sh"
-
 ##? Clone GitHub repository.
 ##?
 ##? Usage:
@@ -12,6 +10,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##?   git clone my-org my-cool-repo
 ##?   git clone my-username my-cool-repo ~/Documents/Projects
 
+source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare destination_dir org_name repo_name
 

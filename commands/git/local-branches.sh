@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${CLI_DIR}/core/helpers.sh"
-
 ##? Find git repositories with local branches.
 ##?
 ##? Usage:
@@ -11,6 +9,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##? Options:
 ##?   <path>  Path to the directory to search in [default: .]
 
+source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare path
 

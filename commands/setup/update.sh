@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${CLI_DIR}/core/helpers.sh"
-
 ##? Update Homebrew and conda packages.
 ##?
 ##? Usage:
@@ -17,6 +15,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##?   setup update --conda
 ##?   setup update --brew --conda
 
+source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare brew conda
 

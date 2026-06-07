@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${CLI_DIR}/core/helpers.sh"
-
 ##? Trigger continuous integration (CI) on GitHub repository, such as GitHub Action.
 ##?
 ##? This command will make an empty commit and push to the current branch.
@@ -10,6 +8,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##? Usage:
 ##?   git trigger [--force]
 
+source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare force
 

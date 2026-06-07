@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-source "${CLI_DIR}/core/helpers.sh"
-
 ##? Set up Java on your computer.
 ##?
 ##? This script installs 'jenv' and Azul Zulu Java, which works in architectures x86_64 and arm64.
@@ -21,6 +19,7 @@ source "${CLI_DIR}/core/helpers.sh"
 ##?   setup java
 ##?   setup java --version=17
 
+source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare version
 
