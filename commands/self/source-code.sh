@@ -14,10 +14,22 @@ source "${CLI_DIR}/core/helpers.sh"
 parse_help "$@"
 declare command subcommand
 
-script_path="${CLI_DIR}/commands/${command}/${subcommand}.sh"
+# Validate that command/subcommand contain only safe characters (no path traversal or globs)
+if [[ ! $command =~ ^[a-z0-9][a-z0-9_-]*$ ]]; then
+  exit_with_error "Invalid command name: '$command'. Use lowercase letters, numbers, hyphens, and underscores only."
+fi
+if [[ ! $subcommand =~ ^[a-z0-9][a-z0-9_-]*$ ]]; then
+  exit_with_error "Invalid subcommand name: '$subcommand'. Use lowercase letters, numbers, hyphens, and underscores only."
+fi
 
-if [[ ! -f "$script_path" ]]; then
-  exit_with_error "Command '$command $subcommand' not found in '${script_path}'."
+# Resolve file using find to enforce "commands/" boundary (prevents ../.. and glob escapes)
+script_path=$(find "${CLI_DIR}/commands" \
+  -maxdepth 2 \
+  -type f \
+  -path "${CLI_DIR}/commands/${command}/${subcommand}.sh")
+
+if [[ -z $script_path ]]; then
+  exit_with_error "Command 'mycli $command $subcommand' not found."
 fi
 
 echo_gray "Source code for 'mycli $command $subcommand' (file '$script_path'):\n"
