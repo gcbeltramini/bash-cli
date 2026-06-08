@@ -35,7 +35,7 @@ fi
 echo_gray "Source code for 'mycli $command $subcommand' (file '$script_path'):\n"
 
 if command_exists "bat"; then
-  bat --style=plain --color=always --language=bash "$script_path"
+  bat --style=plain --color=auto --language=bash "$script_path"
 else
   cat "$script_path"
 fi
