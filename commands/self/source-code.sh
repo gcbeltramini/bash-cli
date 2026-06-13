@@ -22,13 +22,9 @@ if [[ ! $subcommand =~ ^[a-z0-9][a-z0-9_-]*$ ]]; then
   exit_with_error "Invalid subcommand name: '$subcommand'. Use lowercase letters, numbers, hyphens, and underscores only."
 fi
 
-# Resolve file using find to enforce "commands/" boundary (prevents ../.. and glob escapes)
-script_path=$(find "${CLI_DIR}/commands" \
-  -maxdepth 2 \
-  -type f \
-  -path "${CLI_DIR}/commands/${command}/${subcommand}.sh")
+script_path="${CLI_DIR}/commands/${command}/${subcommand}.sh"
 
-if [[ -z $script_path ]]; then
+if [[ ! -f "$script_path" ]]; then
   exit_with_error "Command 'mycli $command $subcommand' not found."
 fi
 
