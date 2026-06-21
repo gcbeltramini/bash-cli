@@ -111,18 +111,39 @@ export some_flag="false"
 }
 
 test__is_str_to_eval() {
+  # shellcheck disable=SC2034
+  local -r multi_line_exports="# foo
+export x=123
+# bar
+export abc=qwerty"
+  # shellcheck disable=SC2034
+  local -r multi_line_mixed="export x=123
+abc=qwerty"
+
   assertTrue '_is_str_to_eval "export xyz=1234"'
   assertFalse '_is_str_to_eval "# export xyz=1234"'
-  assertTrue '_is_str_to_eval "# foo\nexport x=123\n# bar\nexport abc=qwerty"'
-  assertFalse '_is_str_to_eval "export x=123\nabc=qwerty"'
+
+  # shellcheck disable=SC2016
+  assertTrue "multi-line all-export block is recognized" \
+    '_is_str_to_eval "$multi_line_exports"'
+
+  # shellcheck disable=SC2016
+  assertFalse "block with non-export line is rejected" \
+    '_is_str_to_eval "$multi_line_mixed"'
+
+  # value contains a literal backslash-n (from safe quoting) — must not split the line
+  assertTrue "_is_str_to_eval \"export name='\\\\n'\""
 }
 
 test_eval_args() {
   local result expected
 
   assertTrue "[ -z ${xyz:-} ] && [ -z ${a:-} ]"
-  eval_args "# foo\nexport xyz=1234\n # bar \nexport a='bb'"
-  assertTrue "[ -n ${xyz:-} ] && [ -n ${a:-} ]"
+  eval_args "# foo
+export xyz=1234
+ # bar
+export a='bb'"
+  assertTrue "[ ${xyz:-} == 1234 ] && [ ${a:-} == 'bb' ]"
   unset xyz a
 
   assertTrue "[ -z ${xyz:-} ] && [ -z ${a:-} ]"
