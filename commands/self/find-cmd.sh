@@ -17,13 +17,13 @@ declare command subcommand
 echo_gray "Finding mycli commands that match the following filters..."
 
 if [[ -n "$command" ]]; then
-  echo_gray "- Command regex: $(printf '%s' "$command" | tr -d '\000-\037\177' | sed 's/\\/\\\\/g')"
+  echo_gray "- Command regex: $(printf '%s' "$command" | tr -d '\000-\037\177\200-\237' | sed 's/\\/\\\\/g')"
 else
   echo_gray "- Command regex: none (all commands)"
 fi
 
 if [[ -n "$subcommand" ]]; then
-  echo_gray "- Subcommand regex: $(printf '%s' "$subcommand" | tr -d '\000-\037\177' | sed 's/\\/\\\\/g')"
+  echo_gray "- Subcommand regex: $(printf '%s' "$subcommand" | tr -d '\000-\037\177\200-\237' | sed 's/\\/\\\\/g')"
 else
   echo_gray "- Subcommand regex: none (all subcommands)"
 fi
