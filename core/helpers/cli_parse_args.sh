@@ -35,9 +35,9 @@ _is_str_to_eval() {
   #   _is_str_to_eval <text>
   #
   # Examples:
-  #   _is_str_to_eval 'export eval_this="foo"'
-  #   _is_str_to_eval '# Foo\nexport eval_this="bar"'
-  #   _is_str_to_eval '# Foo\n# export do_not_eval_this="bar"'
+  #   _is_str_to_eval $'export eval_this="foo"'
+  #   _is_str_to_eval $'# Foo\nexport eval_this="bar"'
+  #   _is_str_to_eval $'# Foo\n# export do_not_eval_this="bar"'
   local -r text=$1
   [[ $(grep -vE '^[[:space:]]*($|#)' <<< "$text" | awk '{print $1}' | sort -u) == "export" ]]
 }
