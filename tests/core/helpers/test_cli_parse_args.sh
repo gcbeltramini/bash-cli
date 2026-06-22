@@ -117,6 +117,12 @@ export x=123
 # bar
 export abc=qwerty"
   # shellcheck disable=SC2034
+  local -r multi_line_exports_blank_lines="# foo
+
+export x=123
+
+export abc=qwerty"
+  # shellcheck disable=SC2034
   local -r multi_line_mixed="export x=123
 abc=qwerty"
 
@@ -130,6 +136,10 @@ abc=qwerty"
   # shellcheck disable=SC2016
   assertFalse "block with non-export line is rejected" \
     '_is_str_to_eval "$multi_line_mixed"'
+
+  # shellcheck disable=SC2016
+  assertTrue "export block with blank lines is recognized" \
+    '_is_str_to_eval "$multi_line_exports_blank_lines"'
 
   # value contains a literal backslash-n (from safe quoting) — must not split the line
   assertTrue "_is_str_to_eval \"export name='\\\\n'\""
