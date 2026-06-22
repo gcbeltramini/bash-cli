@@ -141,6 +141,10 @@ abc=qwerty"
   assertTrue "export block with blank lines is recognized" \
     '_is_str_to_eval "$multi_line_exports_blank_lines"'
 
+  # all lines are comments/blank — grep -vE exits 1 (no matches); must return false without aborting
+  assertFalse "comments-only input returns false without aborting" \
+    '_is_str_to_eval "# only a comment"'
+
   # value contains a literal backslash-n (from safe quoting) — must not split the line
   assertTrue '_is_str_to_eval "export name=\"\\n\""'
   assertTrue "_is_str_to_eval \"export name='\\\\n'\""
@@ -154,7 +158,7 @@ test_eval_args() {
 export xyz=1234
  # bar
 export a='bb'"
-  assertTrue "[ \"${xyz:-}\" == \"1234\" ] && [ \"${a:-}\" == \"bb\" ]"
+  assertTrue "[ \"${xyz:-}\" == '1234' ] && [ \"${a:-}\" == 'bb' ]"
   unset xyz a
 
   assertTrue "[ -z ${xyz:-} ] && [ -z ${a:-} ]"
