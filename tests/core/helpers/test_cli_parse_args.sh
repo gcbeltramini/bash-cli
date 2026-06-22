@@ -143,7 +143,7 @@ test_eval_args() {
 export xyz=1234
  # bar
 export a='bb'"
-  assertTrue "[ ${xyz:-} == 1234 ] && [ ${a:-} == 'bb' ]"
+  assertTrue "[ \"${xyz:-}\" == \"1234\" ] && [ \"${a:-}\" == \"bb\" ]"
   unset xyz a
 
   assertTrue "[ -z ${xyz:-} ] && [ -z ${a:-} ]"
