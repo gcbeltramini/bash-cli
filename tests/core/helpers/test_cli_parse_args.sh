@@ -142,6 +142,7 @@ abc=qwerty"
     '_is_str_to_eval "$multi_line_exports_blank_lines"'
 
   # value contains a literal backslash-n (from safe quoting) — must not split the line
+  assertTrue '_is_str_to_eval "export name=\"\\n\""'
   assertTrue "_is_str_to_eval \"export name='\\\\n'\""
 }
 
