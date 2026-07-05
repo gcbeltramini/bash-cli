@@ -15,6 +15,14 @@ TESTS_HELPERS_DIR="${TESTS_DIR}/core/helpers"
 
 source "${TESTS_DIR}/unit_test_helpers.sh"
 
+# GNU `comm` validates that its inputs are sorted by whole line and aborts otherwise; BSD `comm`
+# (macOS default) does not. The lists below are sorted by the file field only (to preserve each
+# file's definition order), so on GNU we must disable that check. The flag does not exist on BSD.
+comm_nocheck=()
+if comm --nocheck-order /dev/null /dev/null &>/dev/null; then
+  comm_nocheck=(--nocheck-order)
+fi
+
 # Run tests
 # --------------------------------------------------------------------------------------------------
 
@@ -36,7 +44,7 @@ new_section_level_2 "Every function in a helper file should have a corresponding
 helper_functions=$(grep -rE '^[^ #]+() {' "$HELPERS_DIR")
 test_helper_functions=$(grep -r '^test_[a-zA-Z0-9_]*' "$TESTS_HELPERS_DIR" | sed 's:tests/::g ; s:test_::g')
 functions_without_test=$(
-  comm -23 \
+  comm "${comm_nocheck[@]}" -23 \
     <(echo "$helper_functions" | sort -t: -k1,1 --stable) \
     <(echo "$test_helper_functions" | sort -t: -k1,1 --stable)
 )
