@@ -30,83 +30,83 @@ test_parse_args() {
   assertEquals "With the --help parameter, it returns the help text" "$expected" "$result"
 
   result=$(parse_args "$help_text" 'hello-world')
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="false"
-export my_cmd="false"
-export my_param="123"
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='false'
+export my_cmd='false'
+export my_param='123'
 export names=()
-export pos1=""
-export pos2=""
-export positional_param=""
-export some_flag="false"
-# <<----------------------------->>'
+export pos1=''
+export pos2=''
+export positional_param=''
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 
   result=$(parse_args "$help_text" 'hello-world' 'John Doe' '--some-flag')
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="false"
-export my_cmd="false"
-export my_param="123"
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='false'
+export my_cmd='false'
+export my_param='123'
 export names=()
-export pos1=""
-export pos2=""
-export positional_param="John Doe"
-export some_flag="true"
-# <<----------------------------->>'
+export pos1=''
+export pos2=''
+export positional_param='John Doe'
+export some_flag='true'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 
   result=$(parse_args "$help_text" 'hello-world' 'many' 'Mr. Smith' 'Mrs. Smith')
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="true"
-export my_cmd="false"
-export my_param="123"
-export names=("Mr. Smith" "Mrs. Smith")
-export pos1=""
-export pos2=""
-export positional_param=""
-export some_flag="false"
-# <<----------------------------->>'
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='true'
+export my_cmd='false'
+export my_param='123'
+export names=('Mr. Smith' 'Mrs. Smith')
+export pos1=''
+export pos2=''
+export positional_param=''
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 
   result=$(parse_args "$help_text" 'hello-world' 'my-cmd' 12 34)
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="false"
-export my_cmd="true"
-export my_param="123"
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='false'
+export my_cmd='true'
+export my_param='123'
 export names=()
-export pos1="12"
-export pos2="34"
-export positional_param=""
-export some_flag="false"
-# <<----------------------------->>'
+export pos1='12'
+export pos2='34'
+export positional_param=''
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 
   result=$(parse_args "$help_text" 'hello-world' 'cmd2' 45 567)
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="true"
-export hello_world="true"
-export many="false"
-export my_cmd="false"
-export my_param="123"
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='true'
+export hello_world='true'
+export many='false'
+export my_cmd='false'
+export my_param='123'
 export names=()
-export pos1="45"
-export pos2="567"
-export positional_param=""
-export some_flag="false"
-# <<----------------------------->>'
+export pos1='45'
+export pos2='567'
+export positional_param=''
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 }
 
@@ -184,35 +184,35 @@ test__parse_help_from_file() {
   local result expected
 
   result=$(_parse_help_from_file "$MOCK_COMMAND_PATH" 'Foo')
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="false"
-export my_cmd="false"
-export my_param="123"
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='false'
+export my_cmd='false'
+export my_param='123'
 export names=()
-export pos1=""
-export pos2=""
-export positional_param="Foo"
-export some_flag="false"
-# <<----------------------------->>'
+export pos1=''
+export pos2=''
+export positional_param='Foo'
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 
   result=$(_parse_help_from_file "$MOCK_COMMAND_PATH" 'many' 'Foo' 'Bar Baz')
-  expected='# <<-- docopt parsed arguments -->>
-export cmd1="false"
-export cmd2="false"
-export hello_world="true"
-export many="true"
-export my_cmd="false"
-export my_param="123"
-export names=("Foo" "Bar Baz")
-export pos1=""
-export pos2=""
-export positional_param=""
-export some_flag="false"
-# <<----------------------------->>'
+  expected="# <<-- docopt parsed arguments -->>
+export cmd1='false'
+export cmd2='false'
+export hello_world='true'
+export many='true'
+export my_cmd='false'
+export my_param='123'
+export names=('Foo' 'Bar Baz')
+export pos1=''
+export pos2=''
+export positional_param=''
+export some_flag='false'
+# <<----------------------------->>"
   assertEquals "$expected" "$result"
 }
 
@@ -240,6 +240,30 @@ cmd2='true'
 pos1='Ab 12'
 pos2='CDE'"
   assertEquals "$expected" "$result"
+}
+
+test_parse_help_does_not_evaluate_injected_code() {
+  local result
+
+  # Values containing command substitution / expansions must be treated as
+  # literal strings during `eval`, never executed (see docopt bash_quote()).
+  # shellcheck disable=SC2016  # single quotes are intentional: keep the value literal
+  result=$("$MOCK_COMMAND_PATH" 'my-cmd' '$(echo pwned)' '`echo pwned`')
+  assertEquals "command substitution is not executed" \
+    "pos1='\$(echo pwned)'
+pos2='\`echo pwned\`'" "$result"
+
+  # shellcheck disable=SC2016  # single quotes are intentional: keep the value literal
+  result=$("$MOCK_COMMAND_PATH" 'my-cmd' '$HOME' '${PATH}')
+  assertEquals "variable expansion is not performed" \
+    "pos1='\$HOME'
+pos2='\${PATH}'" "$result"
+
+  # A literal single quote in the value must round-trip safely.
+  result=$("$MOCK_COMMAND_PATH" 'my-cmd' "it's" 'a b')
+  assertEquals "embedded single quote round-trips" \
+    "pos1='it's'
+pos2='a b'" "$result"
 }
 
 oneTimeSetUp() {
