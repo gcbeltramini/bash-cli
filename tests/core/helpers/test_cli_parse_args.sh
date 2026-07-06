@@ -110,6 +110,41 @@ export some_flag='false'
   assertEquals "$expected" "$result"
 }
 
+test_parse_args_expands_env_vars_in_defaults() {
+  local help_text result
+
+  # `$VAR`/`${VAR}` in a `[default: ...]` are expanded against the environment (defaults come
+  # from the trusted docstring). An unset variable expands to the empty string; `$(...)` and
+  # backticks stay literal, and a user-supplied value is never expanded.
+  # shellcheck disable=SC2016  # single quotes intentional: `$VAR` must reach docopt literally
+  help_text='Usage:
+  anything cmd [--foo=<x>]
+
+Options:
+  --foo=<x>  Some parameter [default: $MYCLI_TEST_DEFAULT]'
+
+  export MYCLI_TEST_DEFAULT='from env'
+  result=$(parse_args "$help_text" 'cmd')
+  assertContains "env var in default is expanded" "$result" "export foo='from env'"
+
+  # shellcheck disable=SC2016  # single quotes intentional: value must reach docopt literally
+  result=$(parse_args "$help_text" 'cmd' '--foo=$MYCLI_TEST_DEFAULT')
+  assertContains "user-supplied value is not expanded" "$result" "export foo='\$MYCLI_TEST_DEFAULT'"
+
+  unset MYCLI_TEST_DEFAULT
+  result=$(parse_args "$help_text" 'cmd')
+  assertContains "unset var in default expands to empty" "$result" "export foo=''"
+
+  # shellcheck disable=SC2016  # single quotes intentional: `$(id)` must reach docopt literally
+  help_text='Usage:
+  anything cmd [--foo=<x>]
+
+Options:
+  --foo=<x>  Some parameter [default: $(id)]'
+  result=$(parse_args "$help_text" 'cmd')
+  assertContains "command substitution in default stays inert" "$result" "export foo='\$(id)'"
+}
+
 test__is_str_to_eval() {
   # shellcheck disable=SC2034
   local -r multi_line_exports="# foo
