@@ -951,6 +951,18 @@ def show_log(message: str) -> None:
 
 
 # cli customization:
+def bash_quote(value: str) -> str:
+    """Return a single-quoted bash literal that is safe to `eval`.
+
+    Single quotes disable all bash expansion (command substitution, `$`
+    expansion, backticks, escapes), so user input cannot inject code. The only
+    character with special meaning inside single quotes is the single quote
+    itself, which is escaped with the standard `'\\''` idiom.
+    """
+    return "'" + value.replace("'", "'\\''") + "'"
+
+
+# cli customization:
 def convert_to_bash(parsed_options: ParsedOptions) -> str:
     import os
 
@@ -967,27 +979,27 @@ def convert_to_bash(parsed_options: ParsedOptions) -> str:
         var_names_list.append(var_name_bash)
 
         if value is None:
-            value_bash: str = '""'
+            value_bash: str = "''"
         elif value is True:
-            value_bash: str = '"true"'
+            value_bash: str = "'true'"
         elif value is False:
-            value_bash: str = '"false"'
+            value_bash: str = "'false'"
         elif isinstance(value, list):
-            value_bash: str = "(" + " ".join(f'"{item}"' for item in value) + ")"
+            value_bash: str = "(" + " ".join(bash_quote(str(item)) for item in value) + ")"
         else:
-            value_bash: str = f'"{value}"'
-
-        if value_bash.startswith('"='):
-            if len(var_name_bash) == 1:
-                # For example: `hello world -f="value"`, instead of `hello world -f "value"`
-                value_bash: str = f'"{value_bash[2::]}'
-            else:
-                # `-f` could be an alias for something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
-                # Since we don't know the original option name, we can't remove the equal sign.
-                show_log(
-                    f'WARNING: The value for {key} starts with an equal sign: "{value}"\n'
-                    "You may need to remove the equal sign when calling the command."
-                )
+            str_value: str = str(value)
+            if str_value.startswith("="):
+                if len(var_name_bash) == 1:
+                    # For example: `hello world -f="value"`, instead of `hello world -f "value"`
+                    str_value = str_value[1:]
+                else:
+                    # `-f` could be an alias for something longer (e.g., `--foo`; in this case, `var_name_bash` would be "foo")
+                    # Since we don't know the original option name, we can't remove the equal sign.
+                    show_log(
+                        f'WARNING: The value for {key} starts with an equal sign: "{value}"\n'
+                        "You may need to remove the equal sign when calling the command."
+                    )
+            value_bash: str = bash_quote(str_value)
 
         bash_vars_definition.append(f"export {var_name_bash:s}={value_bash:s}")
 
