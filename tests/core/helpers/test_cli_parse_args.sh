@@ -123,16 +123,14 @@ test_parse_args_expands_env_vars_in_defaults() {
 Options:
   --foo=<x>  Some parameter [default: $MYCLI_TEST_DEFAULT]'
 
-  export MYCLI_TEST_DEFAULT='from env'
-  result=$(parse_args "$help_text" 'cmd')
+  result=$(MYCLI_TEST_DEFAULT='from env' parse_args "$help_text" 'cmd')
   assertContains "env var in default is expanded" "$result" "export foo='from env'"
 
   # shellcheck disable=SC2016  # single quotes intentional: value must reach docopt literally
-  result=$(parse_args "$help_text" 'cmd' '--foo=$MYCLI_TEST_DEFAULT')
+  result=$(MYCLI_TEST_DEFAULT='from env' parse_args "$help_text" 'cmd' '--foo=$MYCLI_TEST_DEFAULT')
   assertContains "user-supplied value is not expanded" "$result" "export foo='\$MYCLI_TEST_DEFAULT'"
 
-  unset MYCLI_TEST_DEFAULT
-  result=$(parse_args "$help_text" 'cmd')
+  result=$(unset MYCLI_TEST_DEFAULT; parse_args "$help_text" 'cmd')
   assertContains "unset var in default expands to empty" "$result" "export foo=''"
 
   # shellcheck disable=SC2016  # single quotes intentional: `$(id)` must reach docopt literally

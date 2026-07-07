@@ -972,7 +972,7 @@ def expand_env_vars(value: str) -> str:
 
 # cli customization:
 def bash_quote(value: str) -> str:
-    r"""Return a single-quoted bash literal that is safe to `eval`.
+    """Return a single-quoted bash literal that is safe to `eval`.
 
     Single quotes disable all bash expansion (command substitution, `$`
     expansion, backticks, escapes), so user input cannot inject code. The only
