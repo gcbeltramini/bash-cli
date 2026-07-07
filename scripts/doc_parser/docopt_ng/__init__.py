@@ -308,7 +308,7 @@ class _Option(_LeafPattern):
                 argcount = 1
         if argcount:
             matched = re.findall(r"\[default: (.*)\]", description, flags=re.I)
-            value = matched[0] if matched else None
+            value = expand_env_vars(matched[0]) if matched else None
         return cls(short, longer, argcount, value)
 
     def single_match(self, left: list[_LeafPattern]) -> _SingleMatch:
@@ -948,6 +948,27 @@ def show_log(message: str) -> None:
     filename = frame.f_code.co_filename
     line_number = frame.f_lineno
     print(f"{filename}:{line_number} - {message}", file=sys.stderr)
+
+
+# cli customization:
+def expand_env_vars(value: str) -> str:
+    """Expand `$VAR` and `${VAR}` in a docstring default against the environment.
+
+    Defaults come from the (trusted) docstring, so expanding them is safe. This is a pure
+    string substitution — it never invokes a shell — so command substitution (`$(...)`,
+    backticks) and bash-only forms (`${VAR:-default}`) are left untouched, and the expanded
+    result still flows through `bash_quote()` before `eval`. An unset variable expands to the
+    empty string (like an unquoted `$VAR` in the shell). User-supplied values are parsed
+    elsewhere and are never expanded.
+    """
+    import os
+
+    return re.sub(
+        r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$([A-Za-z_][A-Za-z0-9_]*)",
+        lambda m: os.environ.get(m.group(1) or m.group(2), ""),
+        value,
+        flags=re.ASCII,
+    )
 
 
 # cli customization:
