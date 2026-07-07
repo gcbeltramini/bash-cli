@@ -964,9 +964,10 @@ def expand_env_vars(value: str) -> str:
     import os
 
     return re.sub(
-        r"\$\{(\w+)\}|\$(\w+)",
+        r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$([A-Za-z_][A-Za-z0-9_]*)",
         lambda m: os.environ.get(m.group(1) or m.group(2), ""),
         value,
+        flags=re.ASCII,
     )
 
 
