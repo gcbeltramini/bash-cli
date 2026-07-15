@@ -45,8 +45,8 @@ helper_functions=$(grep -rE '^[^ #]+() {' "$HELPERS_DIR")
 test_helper_functions=$(grep -r '^test_[a-zA-Z0-9_]*' "$TESTS_HELPERS_DIR" | sed 's:tests/::g ; s:test_::g')
 functions_without_test=$(
   comm "${comm_nocheck[@]}" -23 \
-    <(echo "$helper_functions" | sort -t: -k1,1 --stable) \
-    <(echo "$test_helper_functions" | sort -t: -k1,1 --stable)
+    <(echo "$helper_functions" | sort -t: -k1,1 -s) \
+    <(echo "$test_helper_functions" | sort -t: -k1,1 -s)
 )
 check_if_error \
   "$functions_without_test" \
