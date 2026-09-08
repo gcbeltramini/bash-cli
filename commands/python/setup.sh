@@ -20,53 +20,71 @@ declare miniforge_version no_update
 
 color="blue"
 
-if is_mac; then
-  os="MacOSX"
+if is_mac && command_exists brew; then
+  new_section_with_color "$color" "Install miniforge with Homebrew"
+  if [[ "$miniforge_version" != "latest" ]]; then
+    echo_warn "Miniforge version = '$miniforge_version' will be ignored. Installing the latest version instead."
+  fi
+  brew install --cask miniforge
+  brew_prefix="$(brew --prefix)" # typically "/opt/homebrew"
+  conda_bin="${brew_prefix}/Caskroom/miniforge/base/condabin/conda"
+  [[ -x "$conda_bin" ]] || conda_bin="${brew_prefix}/Caskroom/miniforge/base/bin/conda"
+  if [[ ! -x "$conda_bin" ]]; then
+    exit_with_error "Conda binary not found after installing 'miniforge' with Homebrew (looked in '${brew_prefix}/Caskroom/miniforge/base')."
+  fi
+  echo_done
 else
-  os="Linux"
+
+  if is_mac; then
+    os="MacOSX"
+  else
+    os="Linux"
+  fi
+
+  arch="$(uname -m)"
+
+  if [[ $miniforge_version == "latest" ]]; then
+    miniforge_fname="Miniforge3-${os}-${arch}.sh"
+    source_url="https://github.com/conda-forge/miniforge/releases/latest/download/${miniforge_fname}"
+  else
+    miniforge_fname="Miniforge3-${miniforge_version}-${os}-${arch}.sh"
+    source_url="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/${miniforge_fname}"
+  fi
+
+  destination_dir="${HOME}/Downloads"
+  local_file="${destination_dir}/${miniforge_fname}"
+
+  new_section_with_color "$color" "Download '$miniforge_fname' into '$destination_dir'"
+  if [[ ! -f $local_file ]]; then
+    wget -P "$destination_dir" "$source_url"
+  else
+    echo "File '$local_file' already exists."
+  fi
+  echo_done
+
+  new_section_with_color "$color" "Install Python with miniforge"
+  bash "$local_file" -bu
+  echo_done
+
+  conda_bin="${HOME}/miniforge3/condabin/conda"
 fi
-
-arch="$(uname -m)"
-
-if [[ $miniforge_version == "latest" ]]; then
-  miniforge_fname="Miniforge3-${os}-${arch}.sh"
-  source_url="https://github.com/conda-forge/miniforge/releases/latest/download/${miniforge_fname}"
-else
-  miniforge_fname="Miniforge3-${miniforge_version}-${os}-${arch}.sh"
-  source_url="https://github.com/conda-forge/miniforge/releases/download/${miniforge_version}/${miniforge_fname}"
-fi
-
-destination_dir="${HOME}/Downloads"
-local_file="${destination_dir}/${miniforge_fname}"
-
-new_section_with_color "$color" "Download '$miniforge_fname' into '$destination_dir'"
-if [[ ! -f $local_file ]]; then
-  wget -P "$destination_dir" "$source_url"
-else
-  echo "File '$local_file' already exists."
-fi
-echo_done
-
-new_section_with_color "$color" "Install Python with miniforge"
-bash "$local_file" -bu
-echo_done
 
 new_section_with_color "$color" "Run init command"
-"${HOME}/miniforge3/condabin/conda" init zsh
+"$conda_bin" init zsh
 echo_done
 
 new_section_with_color "$color" "Add 'ipykernel' to default packages"
-"${HOME}/miniforge3/condabin/conda" config --add create_default_packages ipykernel
+"$conda_bin" config --add create_default_packages ipykernel
 echo_done
 
 if ! $no_update; then
   new_section_with_color "$color" "Update packages"
-  "${HOME}/miniforge3/condabin/conda" update -yn base conda
-  "${HOME}/miniforge3/condabin/conda" update -yn base --all
+  "$conda_bin" update -yn base conda
+  "$conda_bin" update -yn base --all
   echo_done
 
   new_section_with_color "$color" "Install Python packages"
-  "${HOME}/miniforge3/condabin/conda" install -yn base \
+  "$conda_bin" install -yn base \
     boto3 \
     jupyterlab \
     jupyterlab_execute_time \
