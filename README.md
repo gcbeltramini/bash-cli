@@ -189,6 +189,12 @@ The output of `/usr/bin/env bash --version` must return at least version 5.
 
 If it is different, follow the instructions from [the setup section](#setup).
 
+If the version is smaller than 5, you may receive the error:
+
+```shell
+.../bash-cli/....sh: line XX: some_array[@]: unbound variable
+```
+
 ### `zsh: command not found: mycli`
 
 Check if the environment variable `PATH` contains the path to where the file `mycli` is:
