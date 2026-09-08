@@ -25,9 +25,13 @@ if is_mac && command_exists brew; then
   if [[ "$miniforge_version" != "latest" ]]; then
     echo_warn "Miniforge version = '$miniforge_version' will be ignored. Installing the latest version instead."
   fi
-  brew install miniforge
-  conda_bin="/opt/homebrew/Caskroom/miniforge/base/condabin/conda"
-  # same as: /opt/homebrew/Caskroom/miniforge/base/bin/conda
+  brew install --cask miniforge
+  brew_prefix="$(brew --prefix)" # typically "/opt/homebrew"
+  conda_bin="${brew_prefix}/Caskroom/miniforge/base/condabin/conda"
+  [[ -x "$conda_bin" ]] || conda_bin="${brew_prefix}/Caskroom/miniforge/base/bin/conda"
+  if [[ ! -x "$conda_bin" ]]; then
+    exit_with_error "Conda binary not found after installing 'miniforge' with Homebrew (looked in '${brew_prefix}/Caskroom/miniforge/base')."
+  fi
   echo_done
 else
 
